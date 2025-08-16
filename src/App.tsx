@@ -19,6 +19,7 @@ import Blog from '@/pages/Blog'
 import Login from '@/pages/Login'
 import Register from '@/pages/Register'
 import NotFound from '@/pages/NotFound'
+import Admin from '@/pages/Admin' // ✅ NEW
 
 // Components
 import Navbar from '@components/Navbar'
@@ -32,7 +33,7 @@ const App = () => (
       <BookingProvider>
         <TooltipProvider>
           <Toaster />
-          <BrowserRouter>
+          <BrowserRouter basename="/niyali-travel-site">
             <div className="min-h-screen flex flex-col">
               <Navbar />
               <main className="flex-1">
@@ -49,6 +50,7 @@ const App = () => (
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+                  <Route path="/admin" element={<Admin />} /> {/* ✅ NEW */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
