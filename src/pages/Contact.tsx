@@ -30,19 +30,19 @@ const Contact = () => {
     {
       icon: Phone,
       title: 'Phone',
-      details: ['+960 123 4567', '+960 987 6543'],
+      details: ['+960 9107338', '+960 9107338'],
       description: 'Available 24/7 for emergencies'
     },
     {
       icon: Mail,
       title: 'Email',
-      details: ['hello@niyalitravel.com', 'support@niyalitravel.com'],
+      details: ['saleso@niyalitravel.com', 'sales@niyalitravel.com'],
       description: 'We respond within 2 hours'
     },
     {
       icon: MessageCircle,
       title: 'WhatsApp',
-      details: ['+960 123 4567'],
+      details: ['+960 9107338'],
       description: 'Instant messaging support'
     },
     {
