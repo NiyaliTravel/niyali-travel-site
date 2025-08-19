@@ -63,16 +63,6 @@ export default function Navigation() {
             >
               My Trips
             </Link>
-            <Link 
-              href="/admin"
-              className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-              data-testid="nav-admin"
-            >
-              Admin
-            </Link>
-            <div className="hidden lg:flex ml-4">
-              <SocialLinks />
-            </div>
           </div>
           
           {/* Mobile Menu Button */}
@@ -134,18 +124,6 @@ export default function Navigation() {
                   >
                     My Trips
                   </Link>
-                  <Link 
-                    href="/admin"
-                    onClick={() => setIsOpen(false)}
-                    className="bg-gray-800 text-white px-6 py-3 rounded-lg text-center hover:bg-gray-700 transition-colors"
-                    data-testid="mobile-nav-admin"
-                  >
-                    Admin
-                  </Link>
-                </div>
-                
-                <div className="flex justify-center pt-4 border-t">
-                  <SocialLinks />
                 </div>
               </div>
             </SheetContent>

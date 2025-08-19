@@ -61,7 +61,7 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 - Implemented comprehensive booking engine with room and package availability management
 - Added secure admin authentication system with JWT tokens for admin-only access
-- Created separate admin login page at `/admin-login` for restricted access
+- Created separate admin login page at `/admin-login` for restricted access (not visible in public navigation)
 - Built booking availability management interface for admins at `/admin/availability`
 - Integrated booking engine with real-time availability checking at `/booking`
 - Added database tables for room availability, packages, package availability, and payments
@@ -70,8 +70,11 @@ Preferred communication style: Simple, everyday language.
 - Enhanced storage layer with booking and availability management methods
 - Prepared infrastructure for Stripe payment gateway integration (keys pending)
 - Added advanced hero search bar with destination/island selection, date pickers, and guest differentiation (adults/children/infants)
-- Integrated social media links (Facebook/NiyaliTravel, Instagram/NiyaliTravel, WhatsApp +9609107338, Email sales@niyalitravel.com)
+- Integrated social media links in footer only (Facebook/NiyaliTravel, Instagram/NiyaliTravel, WhatsApp +9609107338, Email sales@niyalitravel.com)
 - Set up object storage for image uploads with Google Cloud Storage backend
 - Implemented file upload functionality with ObjectUploader component using Uppy
 - Added public and private object storage routes for serving and uploading images
 - Created comprehensive content management capabilities for admin dashboard
+- Added Guest Houses to main navigation menu
+- Removed admin link from public navigation for better security in production
+- Removed social media links from main menu bar, keeping them only in footer
