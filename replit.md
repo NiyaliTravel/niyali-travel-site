@@ -78,3 +78,8 @@ Preferred communication style: Simple, everyday language.
 - Added Guest Houses to main navigation menu
 - Removed admin link from public navigation for better security in production
 - Removed social media links from main menu bar, keeping them only in footer
+- Added B2B agent authentication system with separate login and registration at `/agent-login`
+- Implemented agent portal authentication requirement - only accessible to verified B2B agents
+- Seeded database with 10 complete guest houses with detailed information
+- Added 26 Maldivian islands with guest houses to backend database for search functionality
+- Created islands API endpoints (`/api/islands`) for backend search capabilities

@@ -2,6 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
+import { db } from "./db";
+import { sql } from "drizzle-orm";
 import { analyzeSentiment } from "./services/openai";
 import { 
   insertUserSchema, insertAgentSchema, insertGuestHouseSchema, 
@@ -140,7 +142,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Guest Houses routes
+  // Islands routes
+  app.get('/api/islands', async (req, res) => {
+    try {
+      const { search, atoll, hasGuestHouses } = req.query;
+      
+      let query = sql`SELECT * FROM islands WHERE is_active = true`;
+      const conditions = [];
+      
+      if (search) {
+        conditions.push(sql`(LOWER(name) LIKE ${`%${search.toString().toLowerCase()}%`} OR LOWER(atoll) LIKE ${`%${search.toString().toLowerCase()}%`})`);
+      }
+      
+      if (atoll) {
+        conditions.push(sql`atoll = ${atoll}`);
+      }
+      
+      if (hasGuestHouses === 'true') {
+        conditions.push(sql`has_guest_houses = true`);
+      }
+      
+      if (conditions.length > 0) {
+        query = sql`SELECT * FROM islands WHERE is_active = true AND ${sql.join(conditions, sql` AND `)}`;
+      }
+      
+      query = sql`${query} ORDER BY name ASC`;
+      
+      const islands = await db.execute(query);
+      res.json(islands.rows);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch islands', error: error.message });
+    }
+  });
+
+  app.get('/api/islands/:id', async (req, res) => {
+    try {
+      const result = await db.execute(sql`
+        SELECT * FROM islands 
+        WHERE id = ${req.params.id} AND is_active = true
+      `);
+      
+      if (result.rows.length === 0) {
+        return res.status(404).json({ message: 'Island not found' });
+      }
+      
+      res.json(result.rows[0]);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch island', error: error.message });
+    }
+  });
+
+  // Guest Houses routes  
   app.get('/api/guest-houses', async (req, res) => {
     try {
       const { atoll, search, featured } = req.query;
