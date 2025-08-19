@@ -206,7 +206,7 @@ export default function AgentPortal() {
                       <div>
                         <div className="flex justify-between text-sm mb-2">
                           <span>Response Time</span>
-                          <span>< 2 hours</span>
+                          <span>&lt; 2 hours</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div className="bg-green-500 h-2 rounded-full" style={{ width: "90%" }}></div>
