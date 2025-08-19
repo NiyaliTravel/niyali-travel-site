@@ -16,6 +16,7 @@ export const users = pgTable("users", {
   country: text("country"),
   profileImage: text("profile_image"),
   role: text("role").notNull().default("traveler"), // traveler, agent, admin
+  isAdmin: boolean("is_admin").default(false),
   isVerified: boolean("is_verified").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -328,3 +329,102 @@ export type ContentSection = typeof contentSections.$inferSelect;
 export type InsertContentSection = z.infer<typeof insertContentSectionSchema>;
 export type NavigationItem = typeof navigationItems.$inferSelect;
 export type InsertNavigationItem = z.infer<typeof insertNavigationItemSchema>;
+
+// Room Availability table for booking engine
+export const roomAvailability = pgTable("room_availability", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  guestHouseId: uuid("guest_house_id").references(() => guestHouses.id).notNull(),
+  roomType: text("room_type").notNull(),
+  date: timestamp("date").notNull(),
+  totalRooms: integer("total_rooms").notNull(),
+  availableRooms: integer("available_rooms").notNull(),
+  pricePerNight: decimal("price_per_night", { precision: 10, scale: 2 }).notNull(),
+  specialOffers: jsonb("special_offers"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Packages table for booking engine
+export const packages = pgTable("packages", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  description: text("description"),
+  inclusions: text("inclusions").array(),
+  exclusions: text("exclusions").array(),
+  duration: integer("duration").notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  maxGuests: integer("max_guests").notNull(),
+  guestHouseIds: uuid("guest_house_ids").array(),
+  experienceIds: uuid("experience_ids").array(),
+  isActive: boolean("is_active").default(true),
+  featured: boolean("featured").default(false),
+  images: text("images").array(),
+  validFrom: timestamp("valid_from"),
+  validTo: timestamp("valid_to"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Package Availability table
+export const packageAvailability = pgTable("package_availability", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  packageId: uuid("package_id").references(() => packages.id).notNull(),
+  date: timestamp("date").notNull(),
+  totalSlots: integer("total_slots").notNull(),
+  availableSlots: integer("available_slots").notNull(),
+  pricePerPerson: decimal("price_per_person", { precision: 10, scale: 2 }).notNull(),
+  specialOffers: jsonb("special_offers"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Payments table for Stripe integration
+export const payments = pgTable("payments", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  bookingId: uuid("booking_id").references(() => bookings.id).notNull(),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  amount: decimal("amount", { precision: 12, scale: 2 }).notNull(),
+  currency: text("currency").default("USD"),
+  status: text("status").default("pending"),
+  paymentMethod: text("payment_method"),
+  stripeCustomerId: text("stripe_customer_id"),
+  refundAmount: decimal("refund_amount", { precision: 12, scale: 2 }).default("0.00"),
+  refundReason: text("refund_reason"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Insert schemas for booking engine tables
+export const insertRoomAvailabilitySchema = createInsertSchema(roomAvailability).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertPackageSchema = createInsertSchema(packages).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertPackageAvailabilitySchema = createInsertSchema(packageAvailability).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertPaymentSchema = createInsertSchema(payments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Types for booking engine
+export type RoomAvailability = typeof roomAvailability.$inferSelect;
+export type InsertRoomAvailability = z.infer<typeof insertRoomAvailabilitySchema>;
+export type Package = typeof packages.$inferSelect;
+export type InsertPackage = z.infer<typeof insertPackageSchema>;
+export type PackageAvailability = typeof packageAvailability.$inferSelect;
+export type InsertPackageAvailability = z.infer<typeof insertPackageAvailabilitySchema>;
+export type Payment = typeof payments.$inferSelect;
+export type InsertPayment = z.infer<typeof insertPaymentSchema>;
