@@ -18,6 +18,9 @@ export default defineConfig({
     emptyOutDir: true,
     chunkSizeWarningLimit: 1000, // Optional: raises warning threshold to 1000kB
     rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html')
+      },
       output: {
         manualChunks: {
           react: ['react', 'react-dom'],
