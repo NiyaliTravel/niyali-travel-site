@@ -50,7 +50,7 @@ export default function Navigation() {
               </Link>
             ))}
             <Link 
-              href="/agent-portal"
+              href="/agent-login"
               className="bg-niyali-gradient text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
               data-testid="nav-agent-portal"
             >
@@ -109,7 +109,7 @@ export default function Navigation() {
                 
                 <div className="flex flex-col space-y-3 pt-6 border-t">
                   <Link 
-                    href="/agent-portal"
+                    href="/agent-login"
                     onClick={() => setIsOpen(false)}
                     className="bg-niyali-gradient text-white px-6 py-3 rounded-lg text-center hover:opacity-90 transition-opacity"
                     data-testid="mobile-nav-agent-portal"

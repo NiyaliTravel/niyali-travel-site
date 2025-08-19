@@ -312,6 +312,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Agent B2B Authentication routes
+  app.post('/api/agents/register', async (req, res) => {
+    try {
+      const { email, password, firstName, lastName, phone, companyName, whatsappNumber, bio } = req.body;
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: 'Email already registered' });
+      }
+      
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+      
+      // Create user with agent role
+      const user = await storage.createUser({
+        username: email,
+        email,
+        password: hashedPassword,
+        firstName,
+        lastName,
+        phone,
+        role: 'agent',
+        isVerified: false
+      });
+      
+      // Create agent profile
+      const agent = await storage.createAgent({
+        userId: user.id,
+        companyName,
+        bio,
+        whatsappNumber,
+        verificationStatus: 'pending'
+      });
+      
+      res.status(201).json({ message: 'Registration submitted for review', agent });
+    } catch (error) {
+      res.status(400).json({ message: 'Failed to register agent', error: error.message });
+    }
+  });
+
+  app.post('/api/agents/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      const user = await storage.getUserByEmail(email);
+      if (!user || user.role !== 'agent') {
+        return res.status(401).json({ message: 'Invalid credentials or not an agent account' });
+      }
+      
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) {
+        return res.status(401).json({ message: 'Invalid credentials' });
+      }
+      
+      // Check if agent is verified
+      const agent = await storage.getAgentByUserId(user.id);
+      if (!agent || agent.verificationStatus !== 'verified') {
+        return res.status(401).json({ message: 'Agent account pending verification' });
+      }
+      
+      const token = jwt.sign(
+        { id: user.id, email: user.email, role: user.role },
+        process.env.JWT_SECRET || 'your-secret-key',
+        { expiresIn: '7d' }
+      );
+      
+      res.json({ token, agent, user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
+    } catch (error) {
+      res.status(500).json({ message: 'Login failed', error: error.message });
+    }
+  });
+
   // Agent routes
   app.post('/api/agents', authenticateToken, async (req, res) => {
     try {

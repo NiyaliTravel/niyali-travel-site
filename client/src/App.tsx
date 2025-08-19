@@ -11,6 +11,7 @@ import GuestHouses from "@/pages/guest-houses";
 import FerrySchedule from "@/pages/ferry-schedule";
 import DomesticAirlines from "@/pages/domestic-airlines";
 import AgentPortal from "@/pages/agent-portal";
+import AgentLogin from "@/pages/agent-login";
 import TravelerPortal from "@/pages/traveler-portal";
 import AdminDashboard from "@/pages/admin-dashboard";
 import AdminLogin from "@/pages/admin-login";
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/ferry-schedule" component={FerrySchedule} />
       <Route path="/domestic-airlines" component={DomesticAirlines} />
       <Route path="/agent-portal" component={AgentPortal} />
+      <Route path="/agent-login" component={AgentLogin} />
       <Route path="/traveler-portal" component={TravelerPortal} />
       <Route path="/admin-login" component={AdminLogin} />
       <Route path="/admin" component={AdminDashboard} />

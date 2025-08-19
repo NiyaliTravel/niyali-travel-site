@@ -9,21 +9,52 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   DollarSign, Users, TrendingUp, Calendar, MessageSquare, 
-  Star, Award, Globe, Phone, Mail, MapPin 
+  Star, Award, Globe, Phone, Mail, MapPin, LogOut 
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AgentPortal() {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
   
+  // Check if agent is authenticated
+  useEffect(() => {
+    const token = localStorage.getItem("agentToken");
+    if (!token) {
+      toast({
+        title: "Authentication Required",
+        description: "Please login to access the agent portal",
+        variant: "destructive"
+      });
+      setLocation("/agent-login");
+    }
+  }, []);
+
   const { data: agentProfile } = useQuery({
     queryKey: ['/api/agents/profile'],
+    enabled: !!localStorage.getItem("agentToken"),
+    retry: false,
   });
 
   const { data: agentBookings } = useQuery({
     queryKey: ['/api/bookings/agent'],
+    enabled: !!localStorage.getItem("agentToken"),
+    retry: false,
   });
+
+  const handleLogout = () => {
+    localStorage.removeItem("agentToken");
+    localStorage.removeItem("agentProfile");
+    toast({
+      title: "Logged out",
+      description: "You have been logged out successfully"
+    });
+    setLocation("/agent-login");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -39,12 +70,25 @@ export default function AgentPortal() {
         </div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            Agent <span className="gradient-text text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-blue-600">Portal</span>
-          </h1>
-          <p className="text-xl mb-6">
-            Manage your bookings, track commissions, and grow your travel business
-          </p>
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex-1">
+              <h1 className="text-4xl md:text-6xl font-bold mb-4">
+                Agent <span className="gradient-text text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-blue-600">Portal</span>
+              </h1>
+              <p className="text-xl mb-6">
+                Manage your bookings, track commissions, and grow your travel business
+              </p>
+            </div>
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              className="bg-white/10 text-white border-white/30 hover:bg-white/20"
+              data-testid="button-agent-logout"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </div>
       </section>
 
