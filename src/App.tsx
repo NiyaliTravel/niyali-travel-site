@@ -46,7 +46,7 @@ function App() {
   return (
     <AuthProvider>
       <BookingProvider>
-        <BrowserRouter>
+        <BrowserRouter basename="/niyali-travel-site">
           <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-grow">
