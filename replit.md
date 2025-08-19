@@ -1,6 +1,6 @@
 # Overview
 
-Niyali Travel is a full-stack web application for authentic Maldivian travel experiences, specializing in guest house bookings and cultural experiences. The platform features an AI-powered chatbot, VR property tours, agent commission system, and real-time ferry schedules. Built with React, Express, and PostgreSQL, it targets travelers seeking local Maldivian experiences beyond traditional resorts.
+Niyali Travel is a full-stack web application for authentic Maldivian travel experiences, specializing in guest house bookings and cultural experiences. The platform features an AI-powered chatbot, domestic airlines functionality, agent commission system, real-time ferry schedules, and backend content management. Built with React, Express, and PostgreSQL, it targets travelers seeking local Maldivian experiences beyond traditional resorts.
 
 # User Preferences
 
@@ -48,10 +48,20 @@ Preferred communication style: Simple, everyday language.
 - **Unsplash**: Image hosting for property and destination photos
 
 ## Key Features
-- **VR Property Tours**: Interactive 360° property viewing
-- **AI Travel Assistant**: OpenAI-powered chatbot for personalized recommendations
+- **Domestic Airlines System**: Comprehensive flight booking with real-time search and filtering
+- **AI Travel Assistant**: OpenAI-powered chatbot for personalized recommendations and flight queries
 - **Agent Portal**: Commission tracking, booking management, and tier progression
 - **Ferry Schedule Integration**: Real-time transportation information
+- **Backend Content Management**: Admin dashboard for editing website content and navigation
+- **Interactive Statistics**: Animated counters and smooth transitions for engagement
 - **Multi-language Support**: Prepared for internationalization
 - **Mobile-responsive Design**: Optimized for all device sizes
 - **Real-time Notifications**: WebSocket-based live updates
+
+## Recent Changes
+- Removed VR tour functionality completely from all components
+- Added comprehensive domestic airlines database schema and API endpoints
+- Created interactive admin dashboard for content management
+- Enhanced website interactivity with animated statistics and hover effects
+- Implemented backend routes for content sections and navigation management
+- Updated UI components to remove VR references and improve user experience

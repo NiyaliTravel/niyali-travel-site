@@ -2,22 +2,18 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, MapPin, Camera } from "lucide-react";
+import { Star, MapPin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import VRViewer from "@/components/vr-viewer";
+
 
 export default function FeaturedGuestHouses() {
-  const [showVRViewer, setShowVRViewer] = useState(false);
-  const [selectedGuestHouse, setSelectedGuestHouse] = useState(null);
+
 
   const { data: guestHouses, isLoading } = useQuery({
     queryKey: ['/api/guest-houses', { featured: 'true' }],
   });
 
-  const handleVRTour = (guestHouse: any) => {
-    setSelectedGuestHouse(guestHouse);
-    setShowVRViewer(true);
-  };
+
 
   const handleBookNow = (guestHouseId: string) => {
     // Handle booking functionality
@@ -25,7 +21,7 @@ export default function FeaturedGuestHouses() {
   };
 
   // Fallback data for display when API doesn't return data
-  const fallbackGuestHouses = [
+  const fallbackGuestHouses: any[] = [
     {
       id: "niyama",
       name: "Niyama Private Islands",
@@ -61,7 +57,7 @@ export default function FeaturedGuestHouses() {
     }
   ];
 
-  const displayGuestHouses = guestHouses?.length > 0 ? guestHouses : fallbackGuestHouses;
+  const displayGuestHouses = (Array.isArray(guestHouses) && guestHouses.length > 0) ? guestHouses : fallbackGuestHouses;
 
   if (isLoading) {
     return (
@@ -103,7 +99,7 @@ export default function FeaturedGuestHouses() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayGuestHouses.map((guestHouse) => (
+          {displayGuestHouses.map((guestHouse: any) => (
             <Card key={guestHouse.id} className="bg-white rounded-3xl overflow-hidden shadow-lg hover-lift">
               <div className="relative">
                 <img 
@@ -136,15 +132,7 @@ export default function FeaturedGuestHouses() {
                     <span className="text-gray-500">/night</span>
                   </div>
                   <div className="flex space-x-2">
-                    <Button 
-                      size="sm"
-                      className="bg-niyali-gradient text-white hover:opacity-90 transition-opacity"
-                      onClick={() => handleVRTour(guestHouse)}
-                      data-testid={`button-vr-${guestHouse.id}`}
-                    >
-                      <Camera className="w-4 h-4 mr-1" />
-                      VR Tour
-                    </Button>
+
                     <Button 
                       size="sm"
                       variant="outline"
@@ -172,26 +160,7 @@ export default function FeaturedGuestHouses() {
         </div>
       </div>
 
-      {/* VR Viewer Modal */}
-      {showVRViewer && selectedGuestHouse && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4">
-          <div className="relative w-full max-w-4xl">
-            <Button
-              variant="outline"
-              size="sm"
-              className="absolute top-4 right-4 z-10 bg-white"
-              onClick={() => setShowVRViewer(false)}
-              data-testid="button-close-vr"
-            >
-              ✕ Close VR Tour
-            </Button>
-            <VRViewer 
-              imageUrl={selectedGuestHouse.vrTourUrl}
-              title={`${selectedGuestHouse.name} - Virtual Tour`}
-            />
-          </div>
-        </div>
-      )}
+
     </section>
   );
 }

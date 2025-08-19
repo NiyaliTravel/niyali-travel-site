@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import VRViewer from "@/components/vr-viewer";
+
 
 export default function HeroSection() {
   const [destination, setDestination] = useState("");
   const [checkIn, setCheckIn] = useState("");
   const [guests, setGuests] = useState("");
-  const [showVRViewer, setShowVRViewer] = useState(false);
+
 
   const atolls = [
     "Dhaalu Atoll",
@@ -24,9 +24,7 @@ export default function HeroSection() {
     console.log({ destination, checkIn, guests });
   };
 
-  const handleVRTour = () => {
-    setShowVRViewer(true);
-  };
+
 
   const handleConnectAgent = () => {
     // Handle agent connection
@@ -105,13 +103,6 @@ export default function HeroSection() {
         
         <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
           <Button 
-            className="bg-white bg-opacity-20 backdrop-blur-sm text-white px-8 py-3 rounded-lg hover:bg-opacity-30 transition-all"
-            onClick={handleVRTour}
-            data-testid="button-start-vr-tour"
-          >
-            🥽 Start VR Tour
-          </Button>
-          <Button 
             variant="outline" 
             className="border-2 border-white text-white px-8 py-3 rounded-lg hover:bg-white hover:text-niyali-navy transition-all"
             onClick={handleConnectAgent}
@@ -122,26 +113,7 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* VR Viewer Modal */}
-      {showVRViewer && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4">
-          <div className="relative w-full max-w-4xl">
-            <Button
-              variant="outline"
-              size="sm"
-              className="absolute top-4 right-4 z-10 bg-white"
-              onClick={() => setShowVRViewer(false)}
-              data-testid="button-close-vr"
-            >
-              ✕ Close
-            </Button>
-            <VRViewer 
-              imageUrl="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080"
-              title="Maldivian Paradise VR Tour"
-            />
-          </div>
-        </div>
-      )}
+
     </section>
   );
 }

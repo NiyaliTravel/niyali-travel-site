@@ -46,7 +46,6 @@ export const guestHouses = pgTable("guest_houses", {
   island: text("island").notNull(),
   location: jsonb("location"), // { lat, lng, address }
   images: text("images").array(),
-  vrTourUrl: text("vr_tour_url"),
   amenities: text("amenities").array(),
   roomTypes: jsonb("room_types"), // array of room type objects
   pricePerNight: decimal("price_per_night", { precision: 10, scale: 2 }),
@@ -93,7 +92,6 @@ export const experiences = pgTable("experiences", {
   price: decimal("price", { precision: 10, scale: 2 }),
   maxParticipants: integer("max_participants"),
   images: text("images").array(),
-  vrPreviewUrl: text("vr_preview_url"),
   difficulty: text("difficulty"), // easy, moderate, challenging
   includedItems: text("included_items").array(),
   requirements: text("requirements").array(),
@@ -187,6 +185,31 @@ export const loyaltyProgram = pgTable("loyalty_program", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Content Management table for backend editing
+export const contentSections = pgTable("content_sections", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  sectionKey: text("section_key").notNull().unique(), // hero, about, features, etc.
+  title: text("title"),
+  subtitle: text("subtitle"),
+  content: text("content"),
+  imageUrl: text("image_url"),
+  settings: jsonb("settings"), // additional configurations
+  isActive: boolean("is_active").default(true),
+  lastEditedBy: uuid("last_edited_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Navigation Menu Items for dynamic navigation
+export const navigationItems = pgTable("navigation_items", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  href: text("href").notNull(),
+  order: integer("order").default(0),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   agent: one(agents, { fields: [users.id], references: [agents.userId] }),
@@ -270,6 +293,17 @@ export const insertDomesticAirlineSchema = createInsertSchema(domesticAirlines).
   updatedAt: true,
 });
 
+export const insertContentSectionSchema = createInsertSchema(contentSections).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertNavigationItemSchema = createInsertSchema(navigationItems).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -290,3 +324,7 @@ export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
 export type DomesticAirline = typeof domesticAirlines.$inferSelect;
 export type InsertDomesticAirline = z.infer<typeof insertDomesticAirlineSchema>;
 export type LoyaltyProgram = typeof loyaltyProgram.$inferSelect;
+export type ContentSection = typeof contentSections.$inferSelect;
+export type InsertContentSection = z.infer<typeof insertContentSectionSchema>;
+export type NavigationItem = typeof navigationItems.$inferSelect;
+export type InsertNavigationItem = z.infer<typeof insertNavigationItemSchema>;

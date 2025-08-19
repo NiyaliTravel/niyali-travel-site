@@ -6,8 +6,10 @@ import { analyzeSentiment } from "./services/openai";
 import { 
   insertUserSchema, insertAgentSchema, insertGuestHouseSchema, 
   insertBookingSchema, insertReviewSchema, insertChatMessageSchema, insertDomesticAirlineSchema,
+  insertContentSectionSchema, insertNavigationItemSchema,
   type User, type Agent, type GuestHouse, type Booking, type Experience,
-  type FerrySchedule, type Review, type ChatMessage, type DomesticAirline
+  type FerrySchedule, type Review, type ChatMessage, type DomesticAirline,
+  type ContentSection, type NavigationItem
 } from "@shared/schema";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -405,6 +407,102 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ available: isAvailable });
     } catch (error) {
       res.status(500).json({ message: 'Failed to check availability', error: error.message });
+    }
+  });
+
+  // Content Management routes for backend editing
+  app.get('/api/content', async (req, res) => {
+    try {
+      const sections = await storage.getAllContentSections();
+      res.json(sections);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch content sections', error: error.message });
+    }
+  });
+
+  app.get('/api/content/:sectionKey', async (req, res) => {
+    try {
+      const section = await storage.getContentSection(req.params.sectionKey);
+      if (!section) {
+        return res.status(404).json({ message: 'Content section not found' });
+      }
+      res.json(section);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch content section', error: error.message });
+    }
+  });
+
+  app.post('/api/content', authenticateToken, async (req, res) => {
+    try {
+      const contentData = insertContentSectionSchema.parse(req.body);
+      const section = await storage.createContentSection({
+        ...contentData,
+        lastEditedBy: (req as any).user.id
+      });
+      res.status(201).json(section);
+    } catch (error) {
+      res.status(400).json({ message: 'Failed to create content section', error: error.message });
+    }
+  });
+
+  app.put('/api/content/:id', authenticateToken, async (req, res) => {
+    try {
+      const contentData = insertContentSectionSchema.partial().parse(req.body);
+      const section = await storage.updateContentSection(req.params.id, {
+        ...contentData,
+        lastEditedBy: (req as any).user.id
+      });
+      if (!section) {
+        return res.status(404).json({ message: 'Content section not found' });
+      }
+      res.json(section);
+    } catch (error) {
+      res.status(400).json({ message: 'Failed to update content section', error: error.message });
+    }
+  });
+
+  // Navigation management routes
+  app.get('/api/navigation', async (req, res) => {
+    try {
+      const items = await storage.getAllNavigationItems();
+      res.json(items);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch navigation items', error: error.message });
+    }
+  });
+
+  app.post('/api/navigation', authenticateToken, async (req, res) => {
+    try {
+      const navData = insertNavigationItemSchema.parse(req.body);
+      const item = await storage.createNavigationItem(navData);
+      res.status(201).json(item);
+    } catch (error) {
+      res.status(400).json({ message: 'Failed to create navigation item', error: error.message });
+    }
+  });
+
+  app.put('/api/navigation/:id', authenticateToken, async (req, res) => {
+    try {
+      const navData = insertNavigationItemSchema.partial().parse(req.body);
+      const item = await storage.updateNavigationItem(req.params.id, navData);
+      if (!item) {
+        return res.status(404).json({ message: 'Navigation item not found' });
+      }
+      res.json(item);
+    } catch (error) {
+      res.status(400).json({ message: 'Failed to update navigation item', error: error.message });
+    }
+  });
+
+  app.delete('/api/navigation/:id', authenticateToken, async (req, res) => {
+    try {
+      const deleted = await storage.deleteNavigationItem(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: 'Navigation item not found' });
+      }
+      res.json({ message: 'Navigation item deleted successfully' });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to delete navigation item', error: error.message });
     }
   });
 

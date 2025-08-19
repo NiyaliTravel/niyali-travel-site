@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Star, MapPin, Users, Wifi, Car, Utensils, Camera } from "lucide-react";
+import { Star, MapPin, Users, Wifi, Car, Utensils } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -225,12 +225,7 @@ export default function GuestHouses() {
                   <Star className="w-4 h-4 text-yellow-400 mr-1" />
                   <span className="text-sm font-medium">4.7</span>
                 </div>
-                <div className="absolute bottom-4 right-4">
-                  <Button size="sm" variant="secondary" className="bg-white bg-opacity-90" data-testid="button-vr-coral">
-                    <Camera className="w-4 h-4 mr-1" />
-                    VR Tour
-                  </Button>
-                </div>
+
               </div>
               
               <CardContent className="p-6">

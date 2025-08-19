@@ -1,9 +1,11 @@
 import { 
   users, agents, guestHouses, bookings, experiences, ferrySchedules, reviews, chatMessages, loyaltyProgram, domesticAirlines,
+  contentSections, navigationItems,
   type User, type InsertUser, type Agent, type InsertAgent, type GuestHouse, type InsertGuestHouse,
   type Booking, type InsertBooking, type Experience, type InsertExperience, type FerrySchedule, 
   type InsertFerrySchedule, type Review, type InsertReview, type ChatMessage, type InsertChatMessage,
-  type LoyaltyProgram, type DomesticAirline, type InsertDomesticAirline
+  type LoyaltyProgram, type DomesticAirline, type InsertDomesticAirline, type ContentSection, 
+  type InsertContentSection, type NavigationItem, type InsertNavigationItem
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, gte, lte, desc, sql, like, or } from "drizzle-orm";
@@ -74,6 +76,18 @@ export interface IStorage {
   // Loyalty Program operations
   getLoyaltyProgram(userId: string): Promise<LoyaltyProgram | undefined>;
   updateLoyaltyPoints(userId: string, points: number): Promise<LoyaltyProgram | undefined>;
+
+  // Content Management operations
+  getContentSection(sectionKey: string): Promise<ContentSection | undefined>;
+  getAllContentSections(): Promise<ContentSection[]>;
+  createContentSection(content: InsertContentSection): Promise<ContentSection>;
+  updateContentSection(id: string, content: Partial<InsertContentSection>): Promise<ContentSection | undefined>;
+
+  // Navigation operations
+  getAllNavigationItems(): Promise<NavigationItem[]>;
+  createNavigationItem(item: InsertNavigationItem): Promise<NavigationItem>;
+  updateNavigationItem(id: string, item: Partial<InsertNavigationItem>): Promise<NavigationItem | undefined>;
+  deleteNavigationItem(id: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -402,6 +416,57 @@ export class DatabaseStorage implements IStorage {
       .where(eq(loyaltyProgram.userId, userId))
       .returning();
     return program || undefined;
+  }
+
+  // Content Management operations
+  async getContentSection(sectionKey: string): Promise<ContentSection | undefined> {
+    const [section] = await db.select().from(contentSections)
+      .where(eq(contentSections.sectionKey, sectionKey));
+    return section || undefined;
+  }
+
+  async getAllContentSections(): Promise<ContentSection[]> {
+    return await db.select().from(contentSections)
+      .where(eq(contentSections.isActive, true))
+      .orderBy(contentSections.createdAt);
+  }
+
+  async createContentSection(insertContent: InsertContentSection): Promise<ContentSection> {
+    const [section] = await db.insert(contentSections).values(insertContent).returning();
+    return section;
+  }
+
+  async updateContentSection(id: string, updateContent: Partial<InsertContentSection>): Promise<ContentSection | undefined> {
+    const [section] = await db.update(contentSections)
+      .set({ ...updateContent, updatedAt: new Date() })
+      .where(eq(contentSections.id, id))
+      .returning();
+    return section || undefined;
+  }
+
+  // Navigation operations
+  async getAllNavigationItems(): Promise<NavigationItem[]> {
+    return await db.select().from(navigationItems)
+      .where(eq(navigationItems.isActive, true))
+      .orderBy(navigationItems.order);
+  }
+
+  async createNavigationItem(insertItem: InsertNavigationItem): Promise<NavigationItem> {
+    const [item] = await db.insert(navigationItems).values(insertItem).returning();
+    return item;
+  }
+
+  async updateNavigationItem(id: string, updateItem: Partial<InsertNavigationItem>): Promise<NavigationItem | undefined> {
+    const [item] = await db.update(navigationItems)
+      .set(updateItem)
+      .where(eq(navigationItems.id, id))
+      .returning();
+    return item || undefined;
+  }
+
+  async deleteNavigationItem(id: string): Promise<boolean> {
+    const result = await db.delete(navigationItems).where(eq(navigationItems.id, id));
+    return result.rowCount > 0;
   }
 }
 
