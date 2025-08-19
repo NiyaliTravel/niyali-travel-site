@@ -69,3 +69,9 @@ Preferred communication style: Simple, everyday language.
 - Created admin-only middleware for protecting sensitive routes
 - Enhanced storage layer with booking and availability management methods
 - Prepared infrastructure for Stripe payment gateway integration (keys pending)
+- Added advanced hero search bar with destination/island selection, date pickers, and guest differentiation (adults/children/infants)
+- Integrated social media links (Facebook/NiyaliTravel, Instagram/NiyaliTravel, WhatsApp +9609107338, Email sales@niyalitravel.com)
+- Set up object storage for image uploads with Google Cloud Storage backend
+- Implemented file upload functionality with ObjectUploader component using Uppy
+- Added public and private object storage routes for serving and uploading images
+- Created comprehensive content management capabilities for admin dashboard

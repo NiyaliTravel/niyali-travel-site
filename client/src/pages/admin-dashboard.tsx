@@ -9,7 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Edit, Save, Plus, Trash2, Settings, Navigation, FileText } from "lucide-react";
+import { Edit, Save, Plus, Trash2, Settings, Navigation, FileText, Upload, Image } from "lucide-react";
+import { ObjectUploader } from "@/components/ObjectUploader";
 
 export default function AdminDashboard() {
   const [editingSection, setEditingSection] = useState<string | null>(null);
@@ -212,13 +213,62 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <Label htmlFor="imageUrl">Image URL</Label>
-                  <Input
-                    id="imageUrl"
-                    value={formData.imageUrl}
-                    onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
-                    placeholder="https://example.com/image.jpg"
-                    data-testid="input-image-url"
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      id="imageUrl"
+                      value={formData.imageUrl}
+                      onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
+                      placeholder="https://example.com/image.jpg or /objects/..."
+                      data-testid="input-image-url"
+                      className="flex-1"
+                    />
+                    <ObjectUploader
+                      maxNumberOfFiles={1}
+                      maxFileSize={10485760}
+                      onGetUploadParameters={async () => {
+                        const response = await fetch('/api/objects/upload', {
+                          method: 'POST',
+                          headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+                          }
+                        });
+                        const data = await response.json();
+                        return {
+                          method: 'PUT' as const,
+                          url: data.uploadURL
+                        };
+                      }}
+                      onComplete={async (result) => {
+                        if (result.successful && result.successful[0]) {
+                          const uploadURL = result.successful[0].uploadURL;
+                          const response = await fetch('/api/content-images', {
+                            method: 'PUT',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+                            },
+                            body: JSON.stringify({ imageURL: uploadURL })
+                          });
+                          const data = await response.json();
+                          setFormData(prev => ({ ...prev, imageUrl: data.publicURL }));
+                          toast({ title: "Success", description: "Image uploaded successfully" });
+                        }
+                      }}
+                      buttonClassName="bg-niyali-gradient text-white"
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      Upload Image
+                    </ObjectUploader>
+                  </div>
+                  {formData.imageUrl && (
+                    <div className="mt-2">
+                      <img 
+                        src={formData.imageUrl} 
+                        alt="Preview" 
+                        className="w-32 h-32 object-cover rounded-lg border"
+                      />
+                    </div>
+                  )}
                 </div>
                 <Button 
                   onClick={handleSaveSection}
