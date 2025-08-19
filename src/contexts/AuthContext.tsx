@@ -19,7 +19,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (userData: Partial<User> & { email: string; password: string }) => Promise<boolean>;
+  register: (userData: Partial<User> & { email: string; password: string }) => Promise<string | null>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -77,7 +77,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const register = async (userData: Partial<User> & { email: string; password: string }): Promise<boolean> => {
+  const register = async (userData: Partial<User> & { email: string; password: string }): Promise<string | null> => {
     setIsLoading(true);
     try {
       // Mock registration - replace with actual API call
@@ -98,10 +98,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(newUser);
       localStorage.setItem('niyali_user', JSON.stringify(newUser));
       setIsLoading(false);
-      return true;
+      return newUser.id; // Return the user ID
     } catch (error) {
       setIsLoading(false);
-      return false;
+      return null;
     }
   };
 

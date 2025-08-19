@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,10 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Gift, CheckCircle, Info } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { referralService } from '@/services/referralService';
+import { ReferralValidationResult } from '@/types/referral';
 
 const Register = () => {
+  const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,17 +24,58 @@ const Register = () => {
     country: '',
     contactNumber: '',
     whatsappNumber: '',
+    referralCode: '',
     agreeToTerms: false
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [referralValidation, setReferralValidation] = useState<ReferralValidationResult | null>(null);
+  const [isValidatingCode, setIsValidatingCode] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
+  
+  // Check for referral code in URL parameters
+  useEffect(() => {
+    const refCode = searchParams.get('ref');
+    if (refCode) {
+      handleInputChange('referralCode', refCode);
+      validateReferralCode(refCode);
+    }
+  }, [searchParams]);
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Validate referral code when it changes
+    if (field === 'referralCode' && typeof value === 'string') {
+      if (value.length > 0) {
+        validateReferralCode(value);
+      } else {
+        setReferralValidation(null);
+      }
+    }
+  };
+
+  const validateReferralCode = async (code: string) => {
+    if (!code) {
+      setReferralValidation(null);
+      return;
+    }
+    
+    setIsValidatingCode(true);
+    try {
+      const result = await referralService.validateReferralCode(code);
+      setReferralValidation(result);
+    } catch (error) {
+      setReferralValidation({
+        is_valid: false,
+        message: 'Error validating referral code'
+      });
+    } finally {
+      setIsValidatingCode(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,8 +96,20 @@ const Register = () => {
     }
 
     try {
-      const success = await register(formData);
-      if (success) {
+      // Register the user first
+      const registrationData = { ...formData };
+      delete (registrationData as any).referralCode; // Remove referral code from registration data
+      
+      const userId = await register(registrationData);
+      if (userId) {
+        // Apply referral code if provided and valid
+        if (formData.referralCode && referralValidation?.is_valid) {
+          await referralService.applyReferralCode({
+            code: formData.referralCode,
+            referred_user_id: userId
+          });
+        }
+        
         navigate('/');
       } else {
         setError('Registration failed. Please try again.');
@@ -228,6 +284,56 @@ const Register = () => {
                   </Button>
                 </div>
               </div>
+            </div>
+            
+            {/* Referral Code Section */}
+            <div className="space-y-2">
+              <Label htmlFor="referralCode" className="flex items-center gap-2">
+                <Gift className="h-4 w-4" />
+                Referral Code (Optional)
+              </Label>
+              <div className="relative">
+                <Input
+                  id="referralCode"
+                  placeholder="Enter referral code"
+                  value={formData.referralCode}
+                  onChange={(e) => handleInputChange('referralCode', e.target.value)}
+                  className={
+                    referralValidation
+                      ? referralValidation.is_valid
+                        ? 'border-green-500 pr-10'
+                        : 'border-red-500 pr-10'
+                      : 'pr-10'
+                  }
+                />
+                {isValidatingCode && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></div>
+                  </div>
+                )}
+                {!isValidatingCode && referralValidation && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    {referralValidation.is_valid ? (
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <Info className="h-4 w-4 text-red-500" />
+                    )}
+                  </div>
+                )}
+              </div>
+              {referralValidation && (
+                <p className={`text-sm ${referralValidation.is_valid ? 'text-green-600' : 'text-red-600'}`}>
+                  {referralValidation.message}
+                </p>
+              )}
+              {formData.referralCode && referralValidation?.is_valid && (
+                <Alert className="bg-green-50 border-green-200">
+                  <Gift className="h-4 w-4 text-green-600" />
+                  <AlertDescription className="text-green-800">
+                    Great! You'll receive rewards after your first booking.
+                  </AlertDescription>
+                </Alert>
+              )}
             </div>
             
             <div className="flex items-center space-x-2">
