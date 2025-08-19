@@ -1,264 +1,195 @@
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Users, Star, Clock, Search } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MapPin, Star, Activity, Search, Filter, Navigation } from 'lucide-react';
 
 const Destinations = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedAtoll, setSelectedAtoll] = useState('all');
 
-  const atolls = [
+  const destinations = [
     {
       id: 1,
-      name: 'Baa Atoll',
-      description: 'UNESCO Biosphere Reserve with manta rays and whale sharks',
-      image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&h=400&fit=crop',
-      experiences: 12,
-      resorts: 8,
-      highlights: ['Hanifaru Bay', 'Manta Point', 'UNESCO Site'],
-      bestFor: 'Marine Life'
+      name: 'Malé',
+      atoll: 'Kaafu Atoll',
+      description: 'Capital city with vibrant culture and history',
+      image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=800',
+      rating: 4.5,
+      activities: 25,
+      highlights: ['City Tours', 'Museums', 'Local Markets', 'Restaurants']
     },
     {
       id: 2,
-      name: 'North Malé Atoll',
-      description: 'Home to the capital and world-class resorts',
-      image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop',
-      experiences: 18,
-      resorts: 15,
-      highlights: ['Malé City', 'Airport Proximity', 'Luxury Resorts'],
-      bestFor: 'Convenience'
+      name: 'Maafushi',
+      atoll: 'Kaafu Atoll',
+      description: 'Popular local island with beautiful beaches',
+      image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800',
+      rating: 4.7,
+      activities: 30,
+      highlights: ['Beach Activities', 'Water Sports', 'Sandbank Trips', 'Snorkeling']
     },
     {
       id: 3,
-      name: 'South Malé Atoll',
-      description: 'Perfect for island hopping and cultural experiences',
-      image: 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=600&h=400&fit=crop',
-      experiences: 15,
-      resorts: 12,
-      highlights: ['Local Islands', 'Cultural Tours', 'Traditional Crafts'],
-      bestFor: 'Culture'
+      name: 'Thulusdhoo',
+      atoll: 'Kaafu Atoll',
+      description: 'Surfers paradise with world-class waves',
+      image: 'https://images.unsplash.com/photo-1583835746434-cf1534674b41?w=800',
+      rating: 4.8,
+      activities: 20,
+      highlights: ['Surfing', 'Coca-Cola Factory', 'Beach BBQ', 'Island Tours']
     },
     {
       id: 4,
-      name: 'Ari Atoll',
-      description: 'Renowned for whale shark encounters and pristine reefs',
-      image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&h=400&fit=crop',
-      experiences: 14,
-      resorts: 10,
-      highlights: ['Whale Sharks', 'Diving Sites', 'Marine Protected Areas'],
-      bestFor: 'Diving'
+      name: 'Dhigurah',
+      atoll: 'Alif Dhaal Atoll',
+      description: 'Long island famous for whale shark encounters',
+      image: 'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=800',
+      rating: 4.9,
+      activities: 18,
+      highlights: ['Whale Sharks', 'Long Beach', 'Diving', 'Fishing']
     },
     {
       id: 5,
-      name: 'Lhaviyani Atoll',
-      description: 'Untouched beauty with excellent snorkeling spots',
-      image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop',
-      experiences: 8,
-      resorts: 6,
-      highlights: ['Pristine Reefs', 'Kuredu Express', 'Shipwreck Diving'],
-      bestFor: 'Adventure'
+      name: 'Rasdhoo',
+      atoll: 'Alif Alif Atoll',
+      description: 'Diving hotspot with hammerhead sharks',
+      image: 'https://images.unsplash.com/photo-1540202404-1b927e27fa8b?w=800',
+      rating: 4.6,
+      activities: 22,
+      highlights: ['Hammerhead Diving', 'Beach Picnics', 'Snorkeling', 'Island Hopping']
     },
     {
       id: 6,
-      name: 'Addu Atoll',
-      description: 'Southern charm with unique geography and history',
-      image: 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=600&h=400&fit=crop',
-      experiences: 10,
-      resorts: 4,
-      highlights: ['British History', 'Nature Parks', 'Cycling Tours'],
-      bestFor: 'History'
+      name: 'Fulidhoo',
+      atoll: 'Vaavu Atoll',
+      description: 'Peaceful island with pristine beaches',
+      image: 'https://images.unsplash.com/photo-1512100356356-de1b84283e18?w=800',
+      rating: 4.7,
+      activities: 15,
+      highlights: ['Quiet Beaches', 'Traditional Culture', 'Fishing', 'Stargazing']
     }
   ];
 
-  const filteredAtolls = atolls.filter(atoll => {
-    const matchesSearch = atoll.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         atoll.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = selectedAtoll === 'all' || atoll.bestFor.toLowerCase() === selectedAtoll;
-    return matchesSearch && matchesFilter;
+  const atolls = ['all', 'Kaafu Atoll', 'Alif Alif Atoll', 'Alif Dhaal Atoll', 'Vaavu Atoll'];
+
+  const filteredDestinations = destinations.filter(dest => {
+    const matchesSearch = dest.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         dest.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesAtoll = selectedAtoll === 'all' || dest.atoll === selectedAtoll;
+    return matchesSearch && matchesAtoll;
   });
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <section className="relative h-96 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-        <div className="absolute inset-0 bg-black/30" />
-        <div className="relative z-10 container mx-auto px-4 h-full flex items-center">
-          <div className="max-w-2xl">
-            <h1 className="text-4xl font-bold mb-4">Explore 26 Atolls</h1>
-            <p className="text-xl text-blue-100">
-              Discover the unique character of each atoll, from UNESCO biosphere reserves to cultural heartlands
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Search and Filter */}
-      <section className="py-8 bg-white border-b">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-16">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row gap-4 items-center">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search atolls..."
-                className="pl-10"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Explore Destinations</h1>
+          <p className="text-xl opacity-90">Discover the hidden gems of the Maldives</p>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Input
+                  placeholder="Search destinations..."
+                  className="pl-10"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
             </div>
             <Select value={selectedAtoll} onValueChange={setSelectedAtoll}>
-              <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="Filter by interest" />
+              <SelectTrigger>
+                <Filter className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Select Atoll" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Atolls</SelectItem>
-                <SelectItem value="marine life">Marine Life</SelectItem>
-                <SelectItem value="convenience">Convenience</SelectItem>
-                <SelectItem value="culture">Culture</SelectItem>
-                <SelectItem value="diving">Diving</SelectItem>
-                <SelectItem value="adventure">Adventure</SelectItem>
-                <SelectItem value="history">History</SelectItem>
+                {atolls.map(atoll => (
+                  <SelectItem key={atoll} value={atoll}>
+                    {atoll === 'all' ? 'All Atolls' : atoll}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
         </div>
-      </section>
 
-      {/* Atolls Grid */}
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredAtolls.map((atoll) => (
-              <Card key={atoll.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="relative">
-                  <img 
-                    src={atoll.image} 
-                    alt={atoll.name}
-                    className="w-full h-48 object-cover"
-                  />
-                  <Badge className="absolute top-4 left-4 bg-blue-600 text-white">
-                    {atoll.bestFor}
+        {/* Destinations Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredDestinations.map(destination => (
+            <Card key={destination.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <div className="aspect-video overflow-hidden">
+                <img
+                  src={destination.image}
+                  alt={destination.name}
+                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                />
+              </div>
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle className="text-xl">{destination.name}</CardTitle>
+                    <p className="text-sm text-gray-500 flex items-center mt-1">
+                      <MapPin className="h-3 w-3 mr-1" />
+                      {destination.atoll}
+                    </p>
+                  </div>
+                  <Badge variant="secondary">
+                    <Star className="h-3 w-3 mr-1" />
+                    {destination.rating}
                   </Badge>
                 </div>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <MapPin className="h-5 w-5 mr-2 text-blue-600" />
-                    {atoll.name}
-                  </CardTitle>
-                  <CardDescription className="text-gray-600">
-                    {atoll.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between text-sm text-gray-600">
-                      <span className="flex items-center">
-                        <Star className="h-4 w-4 mr-1" />
-                        {atoll.experiences} Experiences
-                      </span>
-                      <span className="flex items-center">
-                        <Users className="h-4 w-4 mr-1" />
-                        {atoll.resorts} Resorts
-                      </span>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-sm">Top Highlights</h4>
-                      <div className="flex flex-wrap gap-1">
-                        {atoll.highlights.map((highlight, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
-                            {highlight}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                      Explore {atoll.name}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">{destination.description}</p>
+                
+                <div className="flex items-center text-sm text-gray-500 mb-4">
+                  <Activity className="h-4 w-4 mr-1" />
+                  {destination.activities} activities available
+                </div>
 
-      {/* Interactive Map Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Interactive Atoll Map</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Explore the geographical layout of the Maldives and plan your island-hopping adventure
-            </p>
-          </div>
-          
-          <div className="bg-gradient-to-b from-blue-50 to-blue-100 rounded-lg p-8 text-center">
-            <div className="w-full h-96 bg-blue-200 rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <MapPin className="h-16 w-16 text-blue-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-blue-800 mb-2">Interactive Map Coming Soon</h3>
-                <p className="text-blue-600">
-                  Explore all 26 atolls with our upcoming interactive map feature
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+                <div className="flex flex-wrap gap-1 mb-4">
+                  {destination.highlights.slice(0, 3).map(highlight => (
+                    <Badge key={highlight} variant="outline" className="text-xs">
+                      {highlight}
+                    </Badge>
+                  ))}
+                  {destination.highlights.length > 3 && (
+                    <Badge variant="outline" className="text-xs">
+                      +{destination.highlights.length - 3} more
+                    </Badge>
+                  )}
+                </div>
 
-      {/* Planning Tips */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Planning Your Atoll Adventure</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Expert tips for choosing the perfect atolls for your Maldivian journey
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card>
-              <CardHeader>
-                <Clock className="h-8 w-8 text-blue-600 mb-2" />
-                <CardTitle>Best Time to Visit</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  November to April offers the best weather conditions. Each atoll has unique seasonal highlights for marine life encounters.
-                </p>
+                <div className="flex gap-2">
+                  <Button className="flex-1" size="sm">
+                    <Navigation className="h-4 w-4 mr-2" />
+                    Explore
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    Save
+                  </Button>
+                </div>
               </CardContent>
             </Card>
-            
-            <Card>
-              <CardHeader>
-                <MapPin className="h-8 w-8 text-green-600 mb-2" />
-                <CardTitle>Transportation</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  Seaplanes, speedboats, and domestic flights connect the atolls. Distance from Malé affects transfer costs and time.
-                </p>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <Users className="h-8 w-8 text-purple-600 mb-2" />
-                <CardTitle>Local Agents</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  Connect with our verified local agents who know each atoll intimately and can craft personalized itineraries.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+          ))}
         </div>
-      </section>
+
+        {filteredDestinations.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500">No destinations found matching your criteria.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

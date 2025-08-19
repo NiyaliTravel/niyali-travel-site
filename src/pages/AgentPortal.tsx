@@ -1,335 +1,217 @@
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  DollarSign, 
-  Users, 
-  Calendar, 
-  TrendingUp, 
-  Star, 
-  MessageCircle, 
-  BookOpen,
-  Award,
-  BarChart3,
-  Globe
-} from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { DollarSign, Users, TrendingUp, Briefcase, Mail, Phone } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const AgentPortal = () => {
-  const { user } = useAuth();
-  const [selectedPeriod, setSelectedPeriod] = useState('month');
-
-  if (!user || user.role !== 'agent') {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardHeader>
-            <CardTitle>Access Denied</CardTitle>
-            <CardDescription>This portal is only accessible to registered agents.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild>
-              <a href="/login">Login as Agent</a>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  const stats = {
-    totalBookings: 47,
-    totalRevenue: 23450,
-    commission: 4690,
-    activeClients: 23,
-    avgRating: 4.8,
-    tierProgress: 68
+  // Mock data for demonstration
+  const agent = {
+    name: 'Jane Agent',
+    email: 'jane.agent@example.com',
+    company: 'Global Travel Agency',
+    contactNumber: '+1234567890',
+    whatsappNumber: '+1234567890',
+    profilePhoto: 'https://public-frontend-cos.metadl.com/mgx/img/portrait.jpg',
+    commissionRate: 10, // in percentage
+    tierBadge: 'Elite Agent'
   };
 
   const recentBookings = [
     {
       id: 1,
-      client: 'Sarah Johnson',
-      experience: 'Hanifaru Bay Snorkeling',
-      date: '2025-01-15',
-      value: 360,
-      status: 'confirmed'
+      clientName: 'Alice Smith',
+      destination: 'Malé Atoll',
+      package: 'Luxury Honeymoon Package',
+      commission: 120,
+      status: 'Confirmed',
+      date: '2025-08-10',
+      totalPrice: 1200
     },
     {
       id: 2,
-      client: 'Marco Silva',
-      experience: 'Freediving with Mantas',
-      date: '2025-01-18',
-      value: 500,
-      status: 'pending'
-    },
-    {
-      id: 3,
-      client: 'Emma Wilson',
-      experience: 'Sunset Dolphin Cruise',
-      date: '2025-01-20',
-      value: 190,
-      status: 'confirmed'
+      clientName: 'Bob Johnson',
+      destination: 'Ari Atoll',
+      package: 'Diving Adventure',
+      commission: 45,
+      status: 'Pending',
+      date: '2025-08-15',
+      totalPrice: 450
     }
   ];
 
-  const clients = [
-    {
-      id: 1,
-      name: 'Sarah Johnson',
-      email: 'sarah@email.com',
-      country: 'USA',
-      totalSpent: 2340,
-      lastBooking: '2025-01-15',
-      avatar: '/images/portrait.jpg'
-    },
-    {
-      id: 2,
-      name: 'Marco Silva',
-      email: 'marco@email.com',
-      country: 'Brazil',
-      totalSpent: 1850,
-      lastBooking: '2025-01-10',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face'
-    }
+  const clientList = [
+    { id: 1, name: 'Alice Smith', email: 'alice.s@example.com', lastBooking: '2025-08-10' },
+    { id: 2, name: 'Bob Johnson', email: 'bob.j@example.com', lastBooking: '2025-08-15' },
+    { id: 3, name: 'Charlie Brown', email: 'charlie.b@example.com', lastBooking: '2025-07-20' }
   ];
+
+  const totalCommissionEarned = recentBookings.reduce((sum, booking) => sum + booking.commission, 0);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-12 w-12">
-                <AvatarImage src={user.profilePhoto} alt={user.name} />
-                <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <h1 className="text-2xl font-bold">Welcome back, {user.name}</h1>
-                <div className="flex items-center space-x-4 text-sm text-gray-600">
-                  <span>{user.company}</span>
-                  <Badge variant="secondary">{user.tierBadge}</Badge>
-                </div>
-              </div>
-            </div>
-            <Button>Create New Booking</Button>
-          </div>
+      <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-16">
+        <div className="container mx-auto px-4">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Agent Portal</h1>
+          <p className="text-xl opacity-90">Manage your clients and commissions</p>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-            <TabsTrigger value="bookings">Bookings</TabsTrigger>
-            <TabsTrigger value="clients">Clients</TabsTrigger>
-            <TabsTrigger value="commission">Commission</TabsTrigger>
-            <TabsTrigger value="profile">Profile</TabsTrigger>
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          {/* Agent Profile Card */}
+          <Card className="md:col-span-1">
+            <CardContent className="p-6 text-center">
+              <img
+                src={agent.profilePhoto}
+                alt={agent.name}
+                className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+              />
+              <h2 className="text-2xl font-bold">{agent.name}</h2>
+              <p className="text-gray-600">{agent.company}</p>
+              <Badge variant="secondary" className="mt-2">{agent.tierBadge}</Badge>
+              <div className="flex items-center justify-center gap-2 text-sm text-gray-600 mt-2">
+                <Mail className="h-4 w-4" /> {agent.email}
+              </div>
+              <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+                <Phone className="h-4 w-4" /> {agent.contactNumber}
+              </div>
+              <Button variant="outline" className="mt-4 w-full">Edit Profile</Button>
+            </CardContent>
+          </Card>
+
+          {/* Quick Stats */}
+          <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Commission</CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">${totalCommissionEarned.toFixed(2)}</div>
+                <p className="text-xs text-muted-foreground">
+                  {agent.commissionRate}% commission rate
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Active Clients</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{clientList.length}</div>
+                <p className="text-xs text-muted-foreground">
+                  Managing your network
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Bookings This Month</CardTitle>
+                <Briefcase className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{recentBookings.length}</div>
+                <p className="text-xs text-muted-foreground">
+                  Recent client activities
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Revenue Generated</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">${recentBookings.reduce((sum, b) => sum + b.totalPrice, 0).toFixed(2)}</div>
+                <p className="text-xs text-muted-foreground">
+                  Total value of bookings
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Main Content Tabs */}
+        <Tabs defaultValue="bookings" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-3">
+            <TabsTrigger value="bookings">Recent Bookings</TabsTrigger>
+            <TabsTrigger value="clients">My Clients</TabsTrigger>
+            <TabsTrigger value="reports">Reports</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="dashboard" className="space-y-6">
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Recent Bookings Tab */}
+          <TabsContent value="bookings" className="space-y-4">
+            {recentBookings.length === 0 ? (
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalBookings}</div>
-                  <p className="text-xs text-muted-foreground">+12% from last month</p>
+                <CardContent className="text-center py-8">
+                  <Briefcase className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No recent bookings. Start assisting your clients!</p>
+                  <Button className="mt-4">Find Packages</Button>
                 </CardContent>
               </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">${stats.totalRevenue.toLocaleString()}</div>
-                  <p className="text-xs text-muted-foreground">+8% from last month</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Commission Earned</CardTitle>
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">${stats.commission.toLocaleString()}</div>
-                  <p className="text-xs text-muted-foreground">20% commission rate</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Active Clients</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.activeClients}</div>
-                  <p className="text-xs text-muted-foreground">+3 new this month</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Tier Progress */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Award className="h-5 w-5 mr-2" />
-                  Tier Progress
-                </CardTitle>
-                <CardDescription>
-                  You're {100 - stats.tierProgress}% away from reaching Platinum Explorer status
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Progress value={stats.tierProgress} className="mb-2" />
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>Gold Explorer</span>
-                  <span>68% Complete</span>
-                  <span>Platinum Explorer</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Recent Activity */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Bookings</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {recentBookings.map((booking) => (
-                      <div key={booking.id} className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium">{booking.client}</p>
-                          <p className="text-sm text-gray-600">{booking.experience}</p>
-                          <p className="text-xs text-gray-500">{booking.date}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-bold">${booking.value}</p>
-                          <Badge variant={booking.status === 'confirmed' ? 'default' : 'secondary'}>
-                            {booking.status}
-                          </Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Performance Metrics</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Average Rating</span>
-                    <div className="flex items-center">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1" />
-                      <span className="font-bold">{stats.avgRating}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Response Time</span>
-                    <span className="font-bold">2.3 hours</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Booking Success Rate</span>
-                    <span className="font-bold">94%</span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="bookings" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>All Bookings</CardTitle>
-                <CardDescription>Manage all your client bookings</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <BookOpen className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-gray-600">Booking management interface would be here</p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="clients" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Client Management</CardTitle>
-                <CardDescription>View and manage your client relationships</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {clients.map((client) => (
-                    <div key={client.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex items-center space-x-4">
-                        <Avatar>
-                          <AvatarImage src={client.avatar} alt={client.name} />
-                          <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium">{client.name}</p>
-                          <p className="text-sm text-gray-600">{client.email}</p>
-                          <div className="flex items-center text-xs text-gray-500">
-                            <Globe className="h-3 w-3 mr-1" />
-                            {client.country}
-                          </div>
-                        </div>
+            ) : (
+              <div className="grid gap-4">
+                {recentBookings.map(booking => (
+                  <Card key={booking.id}>
+                    <CardContent className="p-4 flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-lg">{booking.clientName}</CardTitle>
+                        <CardDescription>{booking.package}</CardDescription>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {booking.destination} - {new Date(booking.date).toLocaleDateString()}
+                        </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold">${client.totalSpent.toLocaleString()}</p>
-                        <p className="text-sm text-gray-600">Total spent</p>
-                        <p className="text-xs text-gray-500">Last: {client.lastBooking}</p>
+                        <Badge variant={booking.status === 'Confirmed' ? 'default' : 'secondary'}>{booking.status}</Badge>
+                        <p className="text-xl font-bold mt-2">${booking.commission.toFixed(2)}</p>
+                        <Button variant="outline" size="sm" className="mt-2">View Details</Button>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
-          <TabsContent value="commission" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Commission & Earnings</CardTitle>
-                <CardDescription>Track your earnings and commission structure</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <BarChart3 className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-gray-600">Commission tracking interface would be here</p>
-                </div>
-              </CardContent>
-            </Card>
+          {/* My Clients Tab */}
+          <TabsContent value="clients" className="space-y-4">
+            {clientList.length === 0 ? (
+              <Card>
+                <CardContent className="text-center py-8">
+                  <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No clients yet. Start building your client base!</p>
+                  <Button className="mt-4">Add New Client</Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-4">
+                {clientList.map(client => (
+                  <Card key={client.id}>
+                    <CardContent className="p-4 flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-lg">{client.name}</CardTitle>
+                        <CardDescription>{client.email}</CardDescription>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Last Booking: {client.lastBooking ? new Date(client.lastBooking).toLocaleDateString() : 'N/A'}
+                        </p>
+                      </div>
+                      <Button variant="outline" size="sm">View Client</Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
-          <TabsContent value="profile" className="space-y-6">
+          {/* Reports Tab */}
+          <TabsContent value="reports" className="space-y-4">
             <Card>
-              <CardHeader>
-                <CardTitle>Agent Profile</CardTitle>
-                <CardDescription>Manage your professional profile and preferences</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <Users className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-gray-600">Profile management interface would be here</p>
-                </div>
+              <CardContent className="text-center py-8">
+                <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <p className="text-muted-foreground">Detailed reports coming soon!</p>
               </CardContent>
             </Card>
           </TabsContent>

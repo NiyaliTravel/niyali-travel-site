@@ -1,417 +1,217 @@
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  Heart, 
-  Calendar, 
-  MessageCircle, 
-  MapPin, 
-  Star, 
-  Bookmark,
-  Settings,
-  User,
-  Clock,
-  CheckCircle
-} from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useBooking } from '@/contexts/BookingContext';
+import { Badge } from '@/components/ui/badge';
+import { Calendar, Heart, User, DollarSign, Gift } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const TravelerPortal = () => {
-  const { user } = useAuth();
-  const { bookingItems } = useBooking();
+  // Mock data for demonstration
+  const user = {
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    profilePhoto: 'https://public-frontend-cos.metadl.com/mgx/img/Avatar.jpg',
+    tierBadge: 'Gold Explorer'
+  };
 
-  if (!user || user.role !== 'traveler') {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardHeader>
-            <CardTitle>Access Denied</CardTitle>
-            <CardDescription>This portal is only accessible to registered travelers.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild>
-              <a href="/login">Login as Traveler</a>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  const upcomingTrips = [
+  const upcomingBookings = [
     {
       id: 1,
-      title: 'Maldives Adventure',
-      destination: 'Baa Atoll',
-      dates: 'Mar 15 - Mar 22, 2025',
-      experiences: ['Hanifaru Bay Snorkeling', 'Sunset Dolphin Cruise'],
-      agent: 'Ahmed Hassan',
-      status: 'confirmed',
-      image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=300&h=200&fit=crop'
+      destination: 'Maafushi Island',
+      resort: 'Maafushi Beach Resort',
+      checkIn: '2025-09-10',
+      checkOut: '2025-09-15',
+      status: 'Confirmed',
+      totalPrice: 1200
     },
     {
       id: 2,
-      title: 'Cultural Immersion',
-      destination: 'South Malé Atoll',
-      dates: 'Apr 10 - Apr 14, 2025',
-      experiences: ['Local Island Tour', 'Traditional Crafts Workshop'],
-      agent: 'Fatima Ali',
-      status: 'pending',
-      image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=300&h=200&fit=crop'
+      destination: 'Ari Atoll',
+      experience: 'Manta Ray Snorkeling',
+      date: '2025-09-12',
+      status: 'Confirmed',
+      totalPrice: 150
     }
   ];
 
-  const pastTrips = [
-    {
-      id: 3,
-      title: 'Honeymoon Escape',
-      destination: 'North Malé Atoll',
-      dates: 'Dec 20 - Dec 27, 2024',
-      experiences: ['Sunset Cruise', 'Spa Treatment'],
-      agent: 'Ahmed Hassan',
-      rating: 5,
-      image: 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=300&h=200&fit=crop'
-    }
-  ];
-
-  const wishlist = [
+  const wishlistItems = [
     {
       id: 1,
-      title: 'Freediving with Whale Sharks',
-      location: 'South Ari Atoll',
-      price: 250,
-      rating: 5.0,
-      image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=300&h=200&fit=crop'
+      type: 'Resort',
+      name: 'The St. Regis Maldives Vommuli Resort',
+      image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800',
+      price: 800
     },
     {
       id: 2,
-      title: 'Underwater Photography Workshop',
-      location: 'Baa Atoll',
-      price: 320,
-      rating: 4.9,
-      image: 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=300&h=200&fit=crop'
-    }
-  ];
-
-  const messages = [
-    {
-      id: 1,
-      agent: 'Ahmed Hassan',
-      lastMessage: 'Your Baa Atoll trip is confirmed! I\'ve sent you the detailed itinerary.',
-      timestamp: '2 hours ago',
-      unread: true,
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face'
-    },
-    {
-      id: 2,
-      agent: 'Fatima Ali',
-      lastMessage: 'The cultural workshop has been updated with new activities.',
-      timestamp: '1 day ago',
-      unread: false,
-      avatar: '/images/Avatar.jpg'
+      type: 'Experience',
+      name: 'Private Island Picnic',
+      image: 'https://images.unsplash.com/photo-1540202404-1b927e27fa8b?w=800',
+      price: 250
     }
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-12 w-12">
-                <AvatarImage src={user.profilePhoto} alt={user.name} />
-                <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <h1 className="text-2xl font-bold">Welcome back, {user.name}</h1>
-                <div className="flex items-center space-x-4 text-sm text-gray-600">
-                  <Badge variant="secondary">{user.tierBadge}</Badge>
-                  <span>Member since 2024</span>
-                </div>
-              </div>
-            </div>
-            <Button>Plan New Trip</Button>
-          </div>
+      <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-16">
+        <div className="container mx-auto px-4">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Welcome, {user.name}!</h1>
+          <p className="text-xl opacity-90">Your personalized travel dashboard</p>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-            <TabsTrigger value="trips">My Trips</TabsTrigger>
-            <TabsTrigger value="wishlist">Wishlist</TabsTrigger>
-            <TabsTrigger value="messages">Messages</TabsTrigger>
-            <TabsTrigger value="profile">Profile</TabsTrigger>
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          {/* User Profile Card */}
+          <Card className="md:col-span-1">
+            <CardContent className="p-6 text-center">
+              <img
+                src={user.profilePhoto}
+                alt={user.name}
+                className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+              />
+              <h2 className="text-2xl font-bold">{user.name}</h2>
+              <p className="text-gray-600">{user.email}</p>
+              <Badge variant="secondary" className="mt-2">{user.tierBadge}</Badge>
+              <Button variant="outline" className="mt-4 w-full">Edit Profile</Button>
+            </CardContent>
+          </Card>
+
+          {/* Quick Stats */}
+          <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Upcoming Bookings</CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{upcomingBookings.length}</div>
+                <p className="text-xs text-muted-foreground">
+                  Your next adventure awaits!
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Wishlist Items</CardTitle>
+                <Heart className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{wishlistItems.length}</div>
+                <p className="text-xs text-muted-foreground">
+                  Dream trips saved
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Referral Rewards</CardTitle>
+                <Gift className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  <Link to="/referral-dashboard" className="text-primary hover:underline">View Dashboard</Link>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Earn by inviting friends
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Spent</CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">$1,350.00</div>
+                <p className="text-xs text-muted-foreground">
+                  Across all bookings
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Main Content Tabs */}
+        <Tabs defaultValue="bookings" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-3">
+            <TabsTrigger value="bookings">Upcoming Bookings</TabsTrigger>
+            <TabsTrigger value="wishlist">My Wishlist</TabsTrigger>
+            <TabsTrigger value="history">Booking History</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="dashboard" className="space-y-6">
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {/* Upcoming Bookings Tab */}
+          <TabsContent value="bookings" className="space-y-4">
+            {upcomingBookings.length === 0 ? (
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Upcoming Trips</CardTitle>
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{upcomingTrips.length}</div>
+                <CardContent className="text-center py-8">
+                  <Calendar className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No upcoming bookings. Start planning your next trip!</p>
+                  <Button className="mt-4">Explore Destinations</Button>
                 </CardContent>
               </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Completed Trips</CardTitle>
-                  <CheckCircle className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{pastTrips.length}</div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Wishlist Items</CardTitle>
-                  <Heart className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{wishlist.length}</div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Active Bookings</CardTitle>
-                  <Bookmark className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{bookingItems.length}</div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Upcoming Trips */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Upcoming Adventures</CardTitle>
-                <CardDescription>Your confirmed and pending trips</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {upcomingTrips.map((trip) => (
-                    <div key={trip.id} className="flex space-x-4 p-4 border rounded-lg">
-                      <img 
-                        src={trip.image} 
-                        alt={trip.title}
-                        className="w-24 h-16 object-cover rounded"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-semibold">{trip.title}</h3>
-                          <Badge variant={trip.status === 'confirmed' ? 'default' : 'secondary'}>
-                            {trip.status}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-gray-600 flex items-center mt-1">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          {trip.destination}
-                        </p>
-                        <p className="text-sm text-gray-600 flex items-center">
-                          <Calendar className="h-4 w-4 mr-1" />
-                          {trip.dates}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-2">
-                          Agent: {trip.agent} • {trip.experiences.length} experiences
+            ) : (
+              <div className="grid gap-4">
+                {upcomingBookings.map(booking => (
+                  <Card key={booking.id}>
+                    <CardContent className="p-4 flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-lg">{booking.destination}</CardTitle>
+                        <CardDescription>
+                          {booking.resort || booking.experience}
+                        </CardDescription>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {booking.checkIn ? `Check-in: ${booking.checkIn}` : `Date: ${booking.date}`}
                         </p>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Recent Messages */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Messages</CardTitle>
-                <CardDescription>Latest updates from your agents</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {messages.slice(0, 2).map((message) => (
-                    <div key={message.id} className="flex items-start space-x-4">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={message.avatar} alt={message.agent} />
-                        <AvatarFallback>{message.agent.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <p className="font-medium">{message.agent}</p>
-                          <span className="text-xs text-gray-500 flex items-center">
-                            <Clock className="h-3 w-3 mr-1" />
-                            {message.timestamp}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600 mt-1">{message.lastMessage}</p>
-                        {message.unread && (
-                          <Badge variant="secondary" className="mt-2 text-xs">
-                            New
-                          </Badge>
-                        )}
+                      <div className="text-right">
+                        <Badge variant="default">{booking.status}</Badge>
+                        <p className="text-xl font-bold mt-2">${booking.totalPrice.toFixed(2)}</p>
+                        <Button variant="outline" size="sm" className="mt-2">View Details</Button>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
-          <TabsContent value="trips" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* My Wishlist Tab */}
+          <TabsContent value="wishlist" className="space-y-4">
+            {wishlistItems.length === 0 ? (
               <Card>
-                <CardHeader>
-                  <CardTitle>Upcoming Trips</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {upcomingTrips.map((trip) => (
-                      <div key={trip.id} className="border rounded-lg p-4">
-                        <img 
-                          src={trip.image} 
-                          alt={trip.title}
-                          className="w-full h-32 object-cover rounded mb-3"
-                        />
-                        <h3 className="font-semibold">{trip.title}</h3>
-                        <p className="text-sm text-gray-600">{trip.destination} • {trip.dates}</p>
-                        <Badge className="mt-2" variant={trip.status === 'confirmed' ? 'default' : 'secondary'}>
-                          {trip.status}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
+                <CardContent className="text-center py-8">
+                  <Heart className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">Your wishlist is empty. Start adding your dream trips!</p>
+                  <Button className="mt-4">Add to Wishlist</Button>
                 </CardContent>
               </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Past Trips</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {pastTrips.map((trip) => (
-                      <div key={trip.id} className="border rounded-lg p-4">
-                        <img 
-                          src={trip.image} 
-                          alt={trip.title}
-                          className="w-full h-32 object-cover rounded mb-3"
-                        />
-                        <h3 className="font-semibold">{trip.title}</h3>
-                        <p className="text-sm text-gray-600">{trip.destination} • {trip.dates}</p>
-                        <div className="flex items-center mt-2">
-                          {[...Array(trip.rating)].map((_, i) => (
-                            <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          ))}
-                          <span className="ml-2 text-sm text-gray-600">Excellent trip!</span>
-                        </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {wishlistItems.map(item => (
+                  <Card key={item.id}>
+                    <CardContent className="p-4 flex items-center gap-4">
+                      <img src={item.image} alt={item.name} className="w-24 h-24 object-cover rounded-md" />
+                      <div>
+                        <CardTitle className="text-lg">{item.name}</CardTitle>
+                        <CardDescription>{item.type}</CardDescription>
+                        <p className="text-xl font-bold mt-2">${item.price.toFixed(2)}</p>
+                        <Button variant="outline" size="sm" className="mt-2">View Details</Button>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
-          <TabsContent value="wishlist" className="space-y-6">
+          {/* Booking History Tab */}
+          <TabsContent value="history" className="space-y-4">
             <Card>
-              <CardHeader>
-                <CardTitle>My Wishlist</CardTitle>
-                <CardDescription>Experiences you want to try</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {wishlist.map((item) => (
-                    <div key={item.id} className="border rounded-lg overflow-hidden">
-                      <img 
-                        src={item.image} 
-                        alt={item.title}
-                        className="w-full h-48 object-cover"
-                      />
-                      <div className="p-4">
-                        <h3 className="font-semibold">{item.title}</h3>
-                        <p className="text-sm text-gray-600 flex items-center mt-1">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          {item.location}
-                        </p>
-                        <div className="flex items-center justify-between mt-3">
-                          <span className="font-bold text-lg">${item.price}</span>
-                          <div className="flex items-center">
-                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1" />
-                            <span className="text-sm">{item.rating}</span>
-                          </div>
-                        </div>
-                        <Button className="w-full mt-3">Book Now</Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="messages" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Messages</CardTitle>
-                <CardDescription>Chat with your travel agents</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {messages.map((message) => (
-                    <div key={message.id} className="flex items-start space-x-4 p-4 border rounded-lg hover:bg-gray-50">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={message.avatar} alt={message.agent} />
-                        <AvatarFallback>{message.agent.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <p className="font-medium">{message.agent}</p>
-                          <span className="text-xs text-gray-500 flex items-center">
-                            <Clock className="h-3 w-3 mr-1" />
-                            {message.timestamp}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600 mt-1">{message.lastMessage}</p>
-                        {message.unread && (
-                          <Badge variant="secondary" className="mt-2 text-xs">
-                            New
-                          </Badge>
-                        )}
-                      </div>
-                      <Button variant="outline" size="sm">
-                        <MessageCircle className="h-4 w-4 mr-1" />
-                        Reply
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="profile" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Profile Settings</CardTitle>
-                <CardDescription>Manage your account and preferences</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <User className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-gray-600">Profile management interface would be here</p>
-                </div>
+              <CardContent className="text-center py-8">
+                <Calendar className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <p className="text-muted-foreground">No past bookings found.</p>
               </CardContent>
             </Card>
           </TabsContent>
