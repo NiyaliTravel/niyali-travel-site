@@ -62,6 +62,12 @@ export default {
           ring: "var(--sidebar-ring)",
         },
         // Niyali Travel Custom Colors
+        'niyali-cream': 'var(--niyali-cream)',
+        'niyali-teal': 'var(--niyali-teal)',
+        'niyali-turquoise': 'var(--niyali-turquoise)',
+        'niyali-sky-blue': 'var(--niyali-sky-blue)',
+        'niyali-white': 'var(--niyali-white)',
+        // Legacy mappings
         'niyali-gold': 'var(--niyali-gold)',
         'niyali-gold-dark': 'var(--niyali-gold-dark)',
         'niyali-navy': 'var(--niyali-navy)',

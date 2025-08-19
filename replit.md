@@ -58,6 +58,14 @@ Preferred communication style: Simple, everyday language.
 - **Mobile-responsive Design**: Optimized for all device sizes
 - **Real-time Notifications**: WebSocket-based live updates
 
+## Design Specifications
+- **Color Scheme**: Cream, Teal, Turquoise Blue, Sky Blue, White
+  - Primary: Teal (#008080)
+  - Secondary: Turquoise (#5ED0CA)
+  - Accent: Sky Blue (#87CEEB)
+  - Background: Cream (#FDF6E3)
+  - Text/Components: White and Teal variations
+
 ## Recent Changes
 - Implemented comprehensive booking engine with room and package availability management
 - Added secure admin authentication system with JWT tokens for admin-only access
@@ -87,3 +95,6 @@ Preferred communication style: Simple, everyday language.
 - Added visual map displaying all 26 islands with interactive markers and details panel
 - Integrated search functionality, transport options display, and popular activities for each island
 - Connected Island Explorer with guest house booking system for seamless navigation
+- Updated color scheme to Cream, Teal, Turquoise Blue, Sky Blue, and White theme (January 2025)
+- Applied new color palette across all UI components, buttons, navigation, and interactive elements
+- Maintained accessibility with proper contrast ratios between text and backgrounds
