@@ -2,6 +2,8 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import path from 'path'
 
+// This comment is added to trigger a new deployment
+
 export default defineConfig({
   base: '/niyali-travel-site/',
   plugins: [react()],
