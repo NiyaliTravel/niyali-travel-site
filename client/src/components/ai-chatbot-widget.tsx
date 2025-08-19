@@ -83,6 +83,10 @@ export default function AIChatbotWidget() {
       return "For ferry schedules and inter-island transport, I can help you find the best routes. Our system shows real-time availability for speedboats, seaplanes, and ferries. What's your departure and destination?";
     }
     
+    if (message.includes('flight') || message.includes('airline') || message.includes('domestic') || message.includes('seaplane')) {
+      return "Great! We offer domestic flights and seaplane services connecting islands across the Maldives. Our airlines include Maldivian, Trans Maldivian Airways, and FlyMe with routes to popular destinations like Gan, Hanimaadhoo, and Fuvahmulah. Prices start from $95. Would you like to see available flights for specific dates and destinations?";
+    }
+    
     if (message.includes('price') || message.includes('cost')) {
       return "Our guest houses range from $320-$890 per night depending on the property and season. Experiences start from $95 for cultural tours. Would you like me to show you options within a specific budget range?";
     }

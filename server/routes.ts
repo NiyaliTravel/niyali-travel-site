@@ -5,9 +5,9 @@ import { storage } from "./storage";
 import { analyzeSentiment } from "./services/openai";
 import { 
   insertUserSchema, insertAgentSchema, insertGuestHouseSchema, 
-  insertBookingSchema, insertReviewSchema, insertChatMessageSchema,
+  insertBookingSchema, insertReviewSchema, insertChatMessageSchema, insertDomesticAirlineSchema,
   type User, type Agent, type GuestHouse, type Booking, type Experience,
-  type FerrySchedule, type Review, type ChatMessage
+  type FerrySchedule, type Review, type ChatMessage, type DomesticAirline
 } from "@shared/schema";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -222,6 +222,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(schedules);
     } catch (error) {
       res.status(500).json({ message: 'Failed to fetch ferry schedules', error: error.message });
+    }
+  });
+
+  // Domestic Airlines routes
+  app.get('/api/domestic-airlines', async (req, res) => {
+    try {
+      const { from, to, date, aircraftType } = req.query;
+      
+      let airlines: DomesticAirline[];
+      
+      if (from && to) {
+        airlines = await storage.searchDomesticAirlines(
+          from as string, 
+          to as string, 
+          date as string
+        );
+      } else if (aircraftType) {
+        airlines = await storage.getDomesticAirlinesByType(aircraftType as string);
+      } else {
+        airlines = await storage.getAllDomesticAirlines();
+      }
+      
+      res.json(airlines);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch domestic airlines', error: error.message });
+    }
+  });
+
+  app.get('/api/domestic-airlines/:id', async (req, res) => {
+    try {
+      const airline = await storage.getDomesticAirline(req.params.id);
+      if (!airline) {
+        return res.status(404).json({ message: 'Airline not found' });
+      }
+      res.json(airline);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch airline', error: error.message });
+    }
+  });
+
+  app.post('/api/domestic-airlines', authenticateToken, async (req, res) => {
+    try {
+      const airlineData = insertDomesticAirlineSchema.parse(req.body);
+      const airline = await storage.createDomesticAirline(airlineData);
+      res.status(201).json(airline);
+    } catch (error) {
+      res.status(400).json({ message: 'Failed to create airline', error: error.message });
     }
   });
 

@@ -10,6 +10,7 @@ export default function Footer() {
     { href: "/experiences", label: "Experiences" },
     { href: "/guest-houses", label: "Guest Houses" },
     { href: "/ferry-schedule", label: "Ferry Schedule" },
+    { href: "/domestic-airlines", label: "Domestic Airlines" },
     { href: "/blog", label: "Travel Blog" },
   ];
 

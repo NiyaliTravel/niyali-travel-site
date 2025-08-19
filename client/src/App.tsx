@@ -9,6 +9,7 @@ import Destinations from "@/pages/destinations";
 import Experiences from "@/pages/experiences";
 import GuestHouses from "@/pages/guest-houses";
 import FerrySchedule from "@/pages/ferry-schedule";
+import DomesticAirlines from "@/pages/domestic-airlines";
 import AgentPortal from "@/pages/agent-portal";
 import TravelerPortal from "@/pages/traveler-portal";
 
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/experiences" component={Experiences} />
       <Route path="/guest-houses" component={GuestHouses} />
       <Route path="/ferry-schedule" component={FerrySchedule} />
+      <Route path="/domestic-airlines" component={DomesticAirlines} />
       <Route path="/agent-portal" component={AgentPortal} />
       <Route path="/traveler-portal" component={TravelerPortal} />
       {/* Fallback to 404 */}

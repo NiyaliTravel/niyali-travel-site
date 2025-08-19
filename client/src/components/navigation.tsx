@@ -14,6 +14,7 @@ export default function Navigation() {
     { href: "/experiences", label: "Experiences" },
     { href: "/guest-houses", label: "Guest Houses" },
     { href: "/ferry-schedule", label: "Ferry" },
+    { href: "/domestic-airlines", label: "Airlines" },
   ];
 
   return (

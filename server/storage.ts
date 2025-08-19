@@ -1,9 +1,9 @@
 import { 
-  users, agents, guestHouses, bookings, experiences, ferrySchedules, reviews, chatMessages, loyaltyProgram,
+  users, agents, guestHouses, bookings, experiences, ferrySchedules, reviews, chatMessages, loyaltyProgram, domesticAirlines,
   type User, type InsertUser, type Agent, type InsertAgent, type GuestHouse, type InsertGuestHouse,
   type Booking, type InsertBooking, type Experience, type InsertExperience, type FerrySchedule, 
   type InsertFerrySchedule, type Review, type InsertReview, type ChatMessage, type InsertChatMessage,
-  type LoyaltyProgram
+  type LoyaltyProgram, type DomesticAirline, type InsertDomesticAirline
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, gte, lte, desc, sql, like, or } from "drizzle-orm";
@@ -54,6 +54,13 @@ export interface IStorage {
   searchFerrySchedules(from: string, to: string, date?: string): Promise<FerrySchedule[]>;
   getFerrySchedule(id: string): Promise<FerrySchedule | undefined>;
   createFerrySchedule(schedule: InsertFerrySchedule): Promise<FerrySchedule>;
+
+  // Domestic Airlines operations
+  getAllDomesticAirlines(): Promise<DomesticAirline[]>;
+  searchDomesticAirlines(from: string, to: string, date?: string): Promise<DomesticAirline[]>;
+  getDomesticAirline(id: string): Promise<DomesticAirline | undefined>;
+  createDomesticAirline(airline: InsertDomesticAirline): Promise<DomesticAirline>;
+  getDomesticAirlinesByType(aircraftType: string): Promise<DomesticAirline[]>;
 
   // Review operations
   getReviewsByGuestHouse(guestHouseId: string): Promise<Review[]>;
@@ -275,23 +282,22 @@ export class DatabaseStorage implements IStorage {
   }
 
   async searchFerrySchedules(from: string, to: string, date?: string): Promise<FerrySchedule[]> {
-    let query = db.select().from(ferrySchedules)
-      .where(
-        and(
-          eq(ferrySchedules.isActive, true),
-          eq(ferrySchedules.fromLocation, from),
-          eq(ferrySchedules.toLocation, to)
-        )
-      );
+    let conditions = [
+      eq(ferrySchedules.isActive, true),
+      eq(ferrySchedules.fromLocation, from),
+      eq(ferrySchedules.toLocation, to)
+    ];
 
     if (date) {
-      const dayOfWeek = new Date(date).toLocaleLowerCase('en-US', { weekday: 'long' });
-      query = query.where(
+      const dayOfWeek = new Date(date).toLocaleDateString('en-US', { weekday: 'long' });
+      conditions.push(
         sql`${ferrySchedules.operatingDays} @> ARRAY[${dayOfWeek}]::text[]`
       );
     }
 
-    return await query.orderBy(ferrySchedules.departureTime);
+    return await db.select().from(ferrySchedules)
+      .where(and(...conditions))
+      .orderBy(ferrySchedules.departureTime);
   }
 
   async getFerrySchedule(id: string): Promise<FerrySchedule | undefined> {
@@ -302,6 +308,53 @@ export class DatabaseStorage implements IStorage {
   async createFerrySchedule(insertSchedule: InsertFerrySchedule): Promise<FerrySchedule> {
     const [schedule] = await db.insert(ferrySchedules).values(insertSchedule).returning();
     return schedule;
+  }
+
+  // Domestic Airlines operations
+  async getAllDomesticAirlines(): Promise<DomesticAirline[]> {
+    return await db.select().from(domesticAirlines)
+      .where(eq(domesticAirlines.isActive, true))
+      .orderBy(domesticAirlines.departureTime);
+  }
+
+  async searchDomesticAirlines(from: string, to: string, date?: string): Promise<DomesticAirline[]> {
+    let conditions = [
+      eq(domesticAirlines.isActive, true),
+      eq(domesticAirlines.fromLocation, from),
+      eq(domesticAirlines.toLocation, to)
+    ];
+
+    if (date) {
+      const dayOfWeek = new Date(date).toLocaleDateString('en-US', { weekday: 'long' });
+      conditions.push(
+        sql`${domesticAirlines.operatingDays} @> ARRAY[${dayOfWeek}]::text[]`
+      );
+    }
+
+    return await db.select().from(domesticAirlines)
+      .where(and(...conditions))
+      .orderBy(domesticAirlines.departureTime);
+  }
+
+  async getDomesticAirline(id: string): Promise<DomesticAirline | undefined> {
+    const [airline] = await db.select().from(domesticAirlines).where(eq(domesticAirlines.id, id));
+    return airline || undefined;
+  }
+
+  async createDomesticAirline(insertAirline: InsertDomesticAirline): Promise<DomesticAirline> {
+    const [airline] = await db.insert(domesticAirlines).values(insertAirline).returning();
+    return airline;
+  }
+
+  async getDomesticAirlinesByType(aircraftType: string): Promise<DomesticAirline[]> {
+    return await db.select().from(domesticAirlines)
+      .where(
+        and(
+          eq(domesticAirlines.isActive, true),
+          eq(domesticAirlines.aircraftType, aircraftType)
+        )
+      )
+      .orderBy(domesticAirlines.departureTime);
   }
 
   // Review operations

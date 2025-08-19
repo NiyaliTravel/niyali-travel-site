@@ -149,6 +149,31 @@ export const chatMessages = pgTable("chat_messages", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Domestic Airlines table
+export const domesticAirlines = pgTable("domestic_airlines", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  airlineName: text("airline_name").notNull(),
+  airlineCode: text("airline_code").notNull(),
+  fromLocation: text("from_location").notNull(),
+  toLocation: text("to_location").notNull(),
+  departureTime: text("departure_time").notNull(),
+  arrivalTime: text("arrival_time").notNull(),
+  duration: text("duration"),
+  aircraftType: text("aircraft_type"), // seaplane, domestic_plane
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  frequency: text("frequency"), // daily, weekly, etc.
+  operatingDays: text("operating_days").array(), // ['Monday', 'Tuesday', etc.]
+  capacity: integer("capacity"),
+  availableSeats: integer("available_seats"),
+  baggageAllowance: text("baggage_allowance"),
+  isActive: boolean("is_active").default(true),
+  bookingUrl: text("booking_url"),
+  contactInfo: jsonb("contact_info"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Loyalty Program table
 export const loyaltyProgram = pgTable("loyalty_program", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -239,6 +264,12 @@ export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
   createdAt: true,
 });
 
+export const insertDomesticAirlineSchema = createInsertSchema(domesticAirlines).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -256,4 +287,6 @@ export type Review = typeof reviews.$inferSelect;
 export type InsertReview = z.infer<typeof insertReviewSchema>;
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+export type DomesticAirline = typeof domesticAirlines.$inferSelect;
+export type InsertDomesticAirline = z.infer<typeof insertDomesticAirlineSchema>;
 export type LoyaltyProgram = typeof loyaltyProgram.$inferSelect;
