@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Checkbox } from '../components/ui/checkbox';
+import { Alert, AlertDescription } from '../components/ui/alert';
 import { Eye, EyeOff, Gift, CheckCircle, Info } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { referralService } from '@/services/referralService';
-import { ReferralValidationResult } from '@/types/referral';
+import { useAuth } from '../contexts/AuthContext';
+import { referralService } from '../services/referralService';
+import { ReferralValidationResult } from '../types/referral';
 
 const Register = () => {
   const [searchParams] = useSearchParams();

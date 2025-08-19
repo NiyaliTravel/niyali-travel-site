@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useToast } from '@/hooks/use-toast';
-import { referralService } from '@/services/referralService';
-import { ReferralDashboardData, ReferralCode, ReferralReward } from '@/types/referral';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Badge } from '../components/ui/badge';
+import { Progress } from '../components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Alert, AlertDescription } from '../components/ui/alert';
+import { useToast } from '../hooks/use-toast';
+import { referralService } from '../services/referralService';
+import { ReferralDashboardData, ReferralCode, ReferralReward } from '../types/referral';
 import {
   Copy,
   Share2,

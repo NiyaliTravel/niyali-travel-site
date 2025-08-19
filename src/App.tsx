@@ -1,30 +1,30 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { BookingProvider } from '@/contexts/BookingContext';
-import { Toaster } from '@/components/ui/toaster';
+import { AuthProvider } from './contexts/AuthContext';
+import { BookingProvider } from './contexts/BookingContext';
+import { Toaster } from './components/ui/toaster';
 
 // Layout components
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 
 // Page components
-import Home from '@/pages/Home';
-import Destinations from '@/pages/Destinations';
-import Experiences from '@/pages/Experiences';
-import Resorts from '@/pages/Resorts';
-import FerrySchedule from '@/pages/FerrySchedule';
-import Blog from '@/pages/Blog';
-import About from '@/pages/About';
-import Contact from '@/pages/Contact';
-import Login from '@/pages/Login';
-import Register from '@/pages/Register';
-import TravelerPortal from '@/pages/TravelerPortal';
-import AgentPortal from '@/pages/AgentPortal';
-import Admin from '@/pages/Admin';
-import AdminBookings from '@/pages/AdminBookings';
-import AdminReferrals from '@/pages/AdminReferrals';
-import ReferralDashboard from '@/pages/ReferralDashboard';
-import NotFound from '@/pages/NotFound';
+import Home from './pages/Home';
+import Destinations from './pages/Destinations';
+import Experiences from './pages/Experiences';
+import Resorts from './pages/Resorts';
+import FerrySchedule from './pages/FerrySchedule';
+import Blog from './pages/Blog';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import TravelerPortal from './pages/TravelerPortal';
+import AgentPortal from './pages/AgentPortal';
+import Admin from './pages/Admin';
+import AdminBookings from './pages/AdminBookings';
+import AdminReferrals from './pages/AdminReferrals';
+import ReferralDashboard from './pages/ReferralDashboard';
+import NotFound from './pages/NotFound';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole }: { children: React.ReactNode; requiredRole?: string }) => {

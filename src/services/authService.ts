@@ -1,4 +1,4 @@
-import supabase from '../supabaseClient';
+import { supabase } from '../lib/supabase';
 import { User } from '../types/user';
 
 export interface AuthResponse {

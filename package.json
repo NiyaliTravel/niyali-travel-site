@@ -1,6 +1,7 @@
 {
   "name": "shadcnui",
   "type": "module",
+  "homepage": "https://niyalitravel.github.io/niyali-travel-site/",
   "packageManager": "pnpm@8.10.0",
   "scripts": {
     "dev": "vite",

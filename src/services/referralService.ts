@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '../lib/supabase';
 import {
   ReferralCode,
   Referral,
@@ -10,7 +10,7 @@ import {
   ApplyReferralCodeParams,
   ReferralDashboardData,
   ReferralRewardCalculation
-} from '@/types/referral';
+} from '../types/referral';
 
 class ReferralService {
   /**
