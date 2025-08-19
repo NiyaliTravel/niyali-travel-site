@@ -17,6 +17,7 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import AdminLogin from "@/pages/admin-login";
 import AdminAvailability from "@/pages/admin-availability";
 import BookingEngine from "@/pages/booking-engine";
+import IslandExplorer from "@/pages/island-explorer";
 
 function Router() {
   return (
@@ -34,6 +35,7 @@ function Router() {
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin/availability" component={AdminAvailability} />
       <Route path="/booking" component={BookingEngine} />
+      <Route path="/island-explorer" component={IslandExplorer} />
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>
