@@ -7,6 +7,7 @@ import {
   insertUserSchema, insertAgentSchema, insertGuestHouseSchema, 
   insertBookingSchema, insertReviewSchema, insertChatMessageSchema, insertDomesticAirlineSchema,
   insertContentSectionSchema, insertNavigationItemSchema,
+  insertRoomAvailabilitySchema, insertPackageSchema, insertPackageAvailabilitySchema,
   type User, type Agent, type GuestHouse, type Booking, type Experience,
   type FerrySchedule, type Review, type ChatMessage, type DomesticAirline,
   type ContentSection, type NavigationItem
@@ -503,6 +504,197 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: 'Navigation item deleted successfully' });
     } catch (error) {
       res.status(500).json({ message: 'Failed to delete navigation item', error: error.message });
+    }
+  });
+
+  // Admin authentication routes
+  app.post('/api/admin/login', async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      
+      // Check if user exists and is admin
+      const user = await storage.getUserByUsername(username);
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ message: 'Invalid admin credentials' });
+      }
+      
+      // Verify password
+      const isValid = await bcrypt.compare(password, user.password);
+      if (!isValid) {
+        return res.status(401).json({ message: 'Invalid admin credentials' });
+      }
+      
+      // Generate JWT token
+      const token = jwt.sign(
+        { userId: user.id, username: user.username, isAdmin: true },
+        process.env.JWT_SECRET || 'your-secret-key',
+        { expiresIn: '24h' }
+      );
+      
+      res.json({ token, user: { id: user.id, username: user.username } });
+    } catch (error) {
+      res.status(500).json({ message: 'Login failed', error: (error as Error).message });
+    }
+  });
+
+  // Middleware to verify admin token
+  const verifyAdmin = (req: any, res: any, next: any) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+    
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
+      if (!decoded.isAdmin) {
+        return res.status(403).json({ message: 'Admin access required' });
+      }
+      req.user = decoded;
+      next();
+    } catch (error) {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+  };
+
+  // Room availability routes
+  app.get('/api/room-availability', async (req, res) => {
+    try {
+      const { guestHouseId, date } = req.query;
+      const availability = await storage.getRoomAvailability(
+        guestHouseId as string,
+        date ? new Date(date as string) : undefined
+      );
+      res.json(availability);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch availability', error: (error as Error).message });
+    }
+  });
+
+  app.post('/api/room-availability', verifyAdmin, async (req, res) => {
+    try {
+      const availabilityData = insertRoomAvailabilitySchema.parse(req.body);
+      const availability = await storage.createRoomAvailability(availabilityData);
+      res.status(201).json(availability);
+    } catch (error) {
+      res.status(400).json({ message: 'Failed to create availability', error: (error as Error).message });
+    }
+  });
+
+  app.put('/api/room-availability/:id', verifyAdmin, async (req, res) => {
+    try {
+      const availabilityData = insertRoomAvailabilitySchema.partial().parse(req.body);
+      const availability = await storage.updateRoomAvailability(req.params.id, availabilityData);
+      res.json(availability);
+    } catch (error) {
+      res.status(400).json({ message: 'Failed to update availability', error: (error as Error).message });
+    }
+  });
+
+  // Package routes
+  app.get('/api/packages', async (req, res) => {
+    try {
+      const packages = await storage.getAllPackages();
+      res.json(packages);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch packages', error: (error as Error).message });
+    }
+  });
+
+  app.post('/api/packages', verifyAdmin, async (req, res) => {
+    try {
+      const packageData = insertPackageSchema.parse(req.body);
+      const pkg = await storage.createPackage(packageData);
+      res.status(201).json(pkg);
+    } catch (error) {
+      res.status(400).json({ message: 'Failed to create package', error: (error as Error).message });
+    }
+  });
+
+  app.put('/api/packages/:id', verifyAdmin, async (req, res) => {
+    try {
+      const packageData = insertPackageSchema.partial().parse(req.body);
+      const pkg = await storage.updatePackage(req.params.id, packageData);
+      res.json(pkg);
+    } catch (error) {
+      res.status(400).json({ message: 'Failed to update package', error: (error as Error).message });
+    }
+  });
+
+  // Package availability routes
+  app.get('/api/package-availability', async (req, res) => {
+    try {
+      const { packageId, date } = req.query;
+      const availability = await storage.getPackageAvailability(
+        packageId as string,
+        date ? new Date(date as string) : undefined
+      );
+      res.json(availability);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch package availability', error: (error as Error).message });
+    }
+  });
+
+  app.post('/api/package-availability', verifyAdmin, async (req, res) => {
+    try {
+      const availabilityData = insertPackageAvailabilitySchema.parse(req.body);
+      const availability = await storage.createPackageAvailability(availabilityData);
+      res.status(201).json(availability);
+    } catch (error) {
+      res.status(400).json({ message: 'Failed to create package availability', error: (error as Error).message });
+    }
+  });
+
+  // Enhanced booking routes with availability check
+  app.post('/api/bookings', authenticateToken, async (req, res) => {
+    try {
+      const bookingData = insertBookingSchema.parse(req.body);
+      
+      // Check availability before creating booking
+      if (req.body.type === 'rooms') {
+        const availability = await storage.checkRoomAvailability(
+          bookingData.guestHouseId,
+          bookingData.checkIn,
+          bookingData.checkOut
+        );
+        
+        if (!availability) {
+          return res.status(400).json({ message: 'Room not available for selected dates' });
+        }
+      }
+      
+      // Create booking
+      const booking = await storage.createBooking({
+        ...bookingData,
+        userId: (req as any).user.id,
+        status: 'pending'
+      });
+      
+      // Update availability
+      await storage.updateAvailabilityAfterBooking(booking);
+      
+      res.status(201).json(booking);
+    } catch (error) {
+      res.status(400).json({ message: 'Failed to create booking', error: (error as Error).message });
+    }
+  });
+
+  app.get('/api/bookings', authenticateToken, async (req, res) => {
+    try {
+      const bookings = await storage.getUserBookings((req as any).user.id);
+      res.json(bookings);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch bookings', error: (error as Error).message });
+    }
+  });
+
+  app.put('/api/bookings/:id/status', verifyAdmin, async (req, res) => {
+    try {
+      const { status } = req.body;
+      const booking = await storage.updateBookingStatus(req.params.id, status);
+      res.json(booking);
+    } catch (error) {
+      res.status(400).json({ message: 'Failed to update booking status', error: (error as Error).message });
     }
   });
 

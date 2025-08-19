@@ -10,6 +10,21 @@ import {
 import { db } from "./db";
 import { eq, and, gte, lte, desc, sql, like, or } from "drizzle-orm";
 
+import { 
+  roomAvailability, 
+  packages, 
+  packageAvailability,
+  payments,
+  type InsertRoomAvailability,
+  type RoomAvailability,
+  type InsertPackage,
+  type Package,
+  type InsertPackageAvailability,
+  type PackageAvailability,
+  type Payment,
+  type InsertPayment
+} from "@shared/schema";
+
 export interface IStorage {
   // User operations
   getUser(id: string): Promise<User | undefined>;
@@ -88,6 +103,28 @@ export interface IStorage {
   createNavigationItem(item: InsertNavigationItem): Promise<NavigationItem>;
   updateNavigationItem(id: string, item: Partial<InsertNavigationItem>): Promise<NavigationItem | undefined>;
   deleteNavigationItem(id: string): Promise<boolean>;
+
+  // Room availability methods
+  getRoomAvailability(guestHouseId?: string, date?: Date): Promise<RoomAvailability[]>;
+  createRoomAvailability(data: InsertRoomAvailability): Promise<RoomAvailability>;
+  updateRoomAvailability(id: string, data: Partial<InsertRoomAvailability>): Promise<RoomAvailability | null>;
+  checkRoomAvailability(guestHouseId: string, checkIn: Date, checkOut: Date): Promise<boolean>;
+
+  // Package methods
+  getAllPackages(): Promise<Package[]>;
+  getPackage(id: string): Promise<Package | null>;
+  createPackage(data: InsertPackage): Promise<Package>;
+  updatePackage(id: string, data: Partial<InsertPackage>): Promise<Package | null>;
+
+  // Package availability methods
+  getPackageAvailability(packageId?: string, date?: Date): Promise<PackageAvailability[]>;
+  createPackageAvailability(data: InsertPackageAvailability): Promise<PackageAvailability>;
+  updatePackageAvailability(id: string, data: Partial<InsertPackageAvailability>): Promise<PackageAvailability | null>;
+
+  // Enhanced booking methods
+  updateAvailabilityAfterBooking(booking: Booking): Promise<void>;
+  getUserBookings(userId: string): Promise<Booking[]>;
+  updateBookingStatus(bookingId: string, status: string): Promise<Booking | null>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -467,6 +504,130 @@ export class DatabaseStorage implements IStorage {
   async deleteNavigationItem(id: string): Promise<boolean> {
     const result = await db.delete(navigationItems).where(eq(navigationItems.id, id));
     return result.rowCount > 0;
+  }
+
+  // Room availability methods
+  async getRoomAvailability(guestHouseId?: string, date?: Date): Promise<RoomAvailability[]> {
+    if (guestHouseId && date) {
+      return await db.select().from(roomAvailability)
+        .where(and(
+          eq(roomAvailability.guestHouseId, guestHouseId),
+          eq(roomAvailability.date, date)
+        ));
+    } else if (guestHouseId) {
+      return await db.select().from(roomAvailability)
+        .where(eq(roomAvailability.guestHouseId, guestHouseId));
+    }
+    return await db.select().from(roomAvailability);
+  }
+
+  async createRoomAvailability(data: InsertRoomAvailability): Promise<RoomAvailability> {
+    const [availability] = await db.insert(roomAvailability).values(data).returning();
+    return availability;
+  }
+
+  async updateRoomAvailability(id: string, data: Partial<InsertRoomAvailability>): Promise<RoomAvailability | null> {
+    const [updated] = await db.update(roomAvailability)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(roomAvailability.id, id))
+      .returning();
+    return updated || null;
+  }
+
+  async checkRoomAvailability(guestHouseId: string, checkIn: Date, checkOut: Date): Promise<boolean> {
+    const availabilities = await db.select().from(roomAvailability)
+      .where(and(
+        eq(roomAvailability.guestHouseId, guestHouseId),
+        gte(roomAvailability.date, checkIn),
+        lte(roomAvailability.date, checkOut)
+      ));
+    
+    return availabilities.every(a => a.availableRooms > 0);
+  }
+
+  // Package methods
+  async getAllPackages(): Promise<Package[]> {
+    return await db.select().from(packages).where(eq(packages.isActive, true));
+  }
+
+  async getPackage(id: string): Promise<Package | null> {
+    const [pkg] = await db.select().from(packages).where(eq(packages.id, id));
+    return pkg || null;
+  }
+
+  async createPackage(data: InsertPackage): Promise<Package> {
+    const [pkg] = await db.insert(packages).values(data).returning();
+    return pkg;
+  }
+
+  async updatePackage(id: string, data: Partial<InsertPackage>): Promise<Package | null> {
+    const [updated] = await db.update(packages)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(packages.id, id))
+      .returning();
+    return updated || null;
+  }
+
+  // Package availability methods
+  async getPackageAvailability(packageId?: string, date?: Date): Promise<PackageAvailability[]> {
+    if (packageId && date) {
+      return await db.select().from(packageAvailability)
+        .where(and(
+          eq(packageAvailability.packageId, packageId),
+          eq(packageAvailability.date, date)
+        ));
+    } else if (packageId) {
+      return await db.select().from(packageAvailability)
+        .where(eq(packageAvailability.packageId, packageId));
+    }
+    return await db.select().from(packageAvailability);
+  }
+
+  async createPackageAvailability(data: InsertPackageAvailability): Promise<PackageAvailability> {
+    const [availability] = await db.insert(packageAvailability).values(data).returning();
+    return availability;
+  }
+
+  async updatePackageAvailability(id: string, data: Partial<InsertPackageAvailability>): Promise<PackageAvailability | null> {
+    const [updated] = await db.update(packageAvailability)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(packageAvailability.id, id))
+      .returning();
+    return updated || null;
+  }
+
+  // Enhanced booking methods
+  async updateAvailabilityAfterBooking(booking: Booking): Promise<void> {
+    // Update room availability if it's a room booking
+    if (booking.guestHouseId) {
+      const checkInDate = new Date(booking.checkIn);
+      const checkOutDate = new Date(booking.checkOut);
+      
+      for (let date = checkInDate; date < checkOutDate; date.setDate(date.getDate() + 1)) {
+        await db.update(roomAvailability)
+          .set({ 
+            availableRooms: sql`${roomAvailability.availableRooms} - 1`
+          })
+          .where(and(
+            eq(roomAvailability.guestHouseId, booking.guestHouseId),
+            eq(roomAvailability.date, new Date(date))
+          ));
+      }
+    }
+  }
+
+  async getUserBookings(userId: string): Promise<Booking[]> {
+    return await db.select().from(bookings)
+      .where(eq(bookings.userId, userId))
+      .orderBy(desc(bookings.createdAt));
+  }
+
+  async updateBookingStatus(bookingId: string, status: string): Promise<Booking | null> {
+    const [updated] = await db.update(bookings)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(bookings.id, bookingId))
+      .returning();
+    return updated || null;
   }
 }
 
