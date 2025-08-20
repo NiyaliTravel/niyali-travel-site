@@ -103,15 +103,17 @@ export default function FeaturedGuestHouses() {
             <Card key={guestHouse.id} className="bg-white rounded-3xl overflow-hidden shadow-lg hover-lift">
               <div className="relative">
                 <img 
-                  src={guestHouse.image} 
+                  src={guestHouse.images?.[0] || guestHouse.image || 'https://images.unsplash.com/photo-1582719508461-905c673771fd'} 
                   alt={guestHouse.name}
                   className="w-full h-64 object-cover"
                 />
-                <div className="absolute top-4 left-4">
-                  <Badge className={`${guestHouse.badge.color} text-white`}>
-                    {guestHouse.badge.text}
-                  </Badge>
-                </div>
+                {guestHouse.badge && (
+                  <div className="absolute top-4 left-4">
+                    <Badge className={`${guestHouse.badge.color} text-white`}>
+                      {guestHouse.badge.text}
+                    </Badge>
+                  </div>
+                )}
                 <div className="absolute top-4 right-4 flex items-center text-white">
                   <Star className="w-5 h-5 text-yellow-400 mr-1 fill-current" />
                   <span className="text-sm font-medium">{guestHouse.rating}</span>
@@ -122,13 +124,15 @@ export default function FeaturedGuestHouses() {
                 <h3 className="text-xl font-semibold text-niyali-navy mb-2">{guestHouse.name}</h3>
                 <p className="text-gray-600 text-sm mb-3 flex items-center">
                   <MapPin className="w-4 h-4 mr-1" />
-                  {guestHouse.location}
+                  {typeof guestHouse.location === 'object' 
+                    ? guestHouse.location?.address || `${guestHouse.island}, ${guestHouse.atoll}`
+                    : guestHouse.location || `${guestHouse.island}, ${guestHouse.atoll}`}
                 </p>
                 <p className="text-gray-700 mb-4">{guestHouse.description}</p>
                 
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-2xl font-bold text-niyali-navy">${guestHouse.price}</span>
+                    <span className="text-2xl font-bold text-niyali-navy">${guestHouse.pricePerNight || guestHouse.price || '250'}</span>
                     <span className="text-gray-500">/night</span>
                   </div>
                   <div className="flex space-x-2">
