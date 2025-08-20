@@ -35,10 +35,16 @@ export default function Islands() {
     queryKey: ['/api/islands'],
     staleTime: 0,
     refetchOnMount: true,
+    gcTime: 0,
   });
 
   // Ensure islands is always an array
   const islandsArray = Array.isArray(islands) ? islands : [];
+  
+  // Debug: Log the data
+  if (islands) {
+    console.log('Islands data received:', islandsArray.length, 'items');
+  }
 
   // Get unique atolls for filtering
   const atolls = ['all', ...Array.from(new Set(islandsArray.map(island => island.atoll)))];

@@ -19,10 +19,16 @@ export default function Packages() {
     queryKey: ['/api/packages'],
     staleTime: 0,
     refetchOnMount: true,
+    gcTime: 0,
   });
 
   // Ensure packages is always an array
   const packagesArray = Array.isArray(packages) ? packages : [];
+  
+  // Debug: Log the data
+  if (packages) {
+    console.log('Packages data received:', packagesArray.length, 'items');
+  }
 
   const { data: guestHouses } = useQuery({
     queryKey: ['/api/guest-houses'],
