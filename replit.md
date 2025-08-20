@@ -83,7 +83,7 @@ Preferred communication style: Simple, everyday language.
 - Implemented file upload functionality with ObjectUploader component using Uppy
 - Added public and private object storage routes for serving and uploading images
 - Created comprehensive content management capabilities for admin dashboard
-- Added Guest Houses to main navigation menu
+- Added Guest Houses to main navigation menu with dynamic dropdown showing real guest houses
 - Removed admin link from public navigation for better security in production
 - Removed social media links from main menu bar, keeping them only in footer
 - Added B2B agent authentication system with separate login and registration at `/agent-login`
@@ -98,3 +98,9 @@ Preferred communication style: Simple, everyday language.
 - Updated color scheme to Cream, Teal, Turquoise Blue, Sky Blue, and White theme (January 2025)
 - Applied new color palette across all UI components, buttons, navigation, and interactive elements
 - Maintained accessibility with proper contrast ratios between text and backgrounds
+- **Latest Updates (August 2025):**
+  - Added Guest Houses dropdown menu in navigation bar showing up to 8 guest houses with "View All" option
+  - Updated Hero Search Bar to fetch real islands from API instead of using static hardcoded data
+  - Created admin seed script and added admin credentials (admin@niyalitravel.com / NiyaliAdmin2025!)
+  - Fixed navigation and hero search component TypeScript errors
+  - Integrated live islands data fetching from backend API for dynamic island selection by atoll

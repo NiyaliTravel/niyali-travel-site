@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Star, MapPin, Users, Wifi, Car, Utensils } from "lucide-react";
+import { Star, MapPin, Users, Wifi, Car, Utensils, Camera } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 

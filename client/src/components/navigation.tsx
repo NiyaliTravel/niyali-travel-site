@@ -2,18 +2,30 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, X } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Menu, X, ChevronDown } from "lucide-react";
 import SocialLinks from "./social-links";
 import NiyaliLogo from "@assets/Niyali Main Logo_1755576205013.jpg";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
+
+  // Fetch guest houses for dropdown
+  const { data: guestHouses = [] } = useQuery<any[]>({
+    queryKey: ['/api/guest-houses', { limit: '10', featured: 'false' }],
+  });
 
   const navItems = [
     { href: "/destinations", label: "Destinations" },
     { href: "/experiences", label: "Experiences" },
-    { href: "/guest-houses", label: "Guest Houses" },
+    { href: "/guest-houses", label: "Guest Houses", hasDropdown: true },
     { href: "/island-explorer", label: "Island Explorer" },
     { href: "/ferry-schedule", label: "Ferry" },
     { href: "/domestic-airlines", label: "Airlines" },
@@ -39,16 +51,57 @@ export default function Navigation() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`text-gray-700 hover:text-niyali-navy transition-colors ${
-                  location === item.href ? 'text-niyali-navy font-medium' : ''
-                }`}
-                data-testid={`nav-${item.label.toLowerCase().replace(' ', '-')}`}
-              >
-                {item.label}
-              </Link>
+              item.hasDropdown ? (
+                <DropdownMenu key={item.href}>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className={`text-gray-700 hover:text-niyali-navy transition-colors font-normal px-0 ${
+                        location === item.href ? 'text-niyali-navy font-medium' : ''
+                      }`}
+                      data-testid={`nav-${item.label.toLowerCase().replace(' ', '-')}`}
+                    >
+                      {item.label}
+                      <ChevronDown className="ml-1 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-64">
+                    <DropdownMenuItem asChild>
+                      <Link href="/guest-houses" className="cursor-pointer">
+                        <span className="font-medium">All Guest Houses</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    {guestHouses.slice(0, 8).map((gh: any) => (
+                      <DropdownMenuItem key={gh.id} asChild>
+                        <Link href={`/guest-houses/${gh.id}`} className="cursor-pointer">
+                          <div className="flex flex-col">
+                            <span className="font-medium">{gh.name}</span>
+                            <span className="text-xs text-gray-500">{gh.island}, {gh.atoll}</span>
+                          </div>
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                    {guestHouses.length > 8 && (
+                      <DropdownMenuItem asChild>
+                        <Link href="/guest-houses" className="cursor-pointer text-center">
+                          <span className="text-sm font-medium text-niyali-navy">View All →</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`text-gray-700 hover:text-niyali-navy transition-colors ${
+                    location === item.href ? 'text-niyali-navy font-medium' : ''
+                  }`}
+                  data-testid={`nav-${item.label.toLowerCase().replace(' ', '-')}`}
+                >
+                  {item.label}
+                </Link>
+              )
             ))}
             <Link 
               href="/agent-login"

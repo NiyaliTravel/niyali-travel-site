@@ -503,7 +503,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteNavigationItem(id: string): Promise<boolean> {
     const result = await db.delete(navigationItems).where(eq(navigationItems.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Room availability methods

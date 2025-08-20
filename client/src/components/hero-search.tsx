@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/popover";
 import { Search, MapPin, Calendar, Users, Plus, Minus } from "lucide-react";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 
 export default function HeroSearch() {
   const [, navigate] = useLocation();
@@ -27,38 +28,29 @@ export default function HeroSearch() {
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
   const [guestsOpen, setGuestsOpen] = useState(false);
+  const [atollIslands, setAtollIslands] = useState<Record<string, string[]>>({});
 
-  const atolls = [
-    "Haa Alif Atoll",
-    "Haa Dhaalu Atoll",
-    "Shaviyani Atoll",
-    "Noonu Atoll",
-    "Raa Atoll",
-    "Baa Atoll",
-    "Lhaviyani Atoll",
-    "Kaafu Atoll (Male)",
-    "Alifu Alifu Atoll",
-    "Alifu Dhaalu Atoll",
-    "Vaavu Atoll",
-    "Meemu Atoll",
-    "Faafu Atoll",
-    "Dhaalu Atoll",
-    "Thaa Atoll",
-    "Laamu Atoll",
-    "Gaafu Alifu Atoll",
-    "Gaafu Dhaalu Atoll",
-    "Gnaviyani Atoll",
-    "Seenu Atoll"
-  ];
+  // Fetch islands from API
+  const { data: islandsData = [] } = useQuery<any[]>({
+    queryKey: ['/api/islands'],
+  });
 
-  const islands = {
-    "Kaafu Atoll (Male)": ["Male", "Hulhumale", "Vilimale", "Maafushi", "Gulhi", "Guraidhoo"],
-    "Alifu Alifu Atoll": ["Rasdhoo", "Thoddoo", "Mathiveri", "Bodufolhudhoo"],
-    "Baa Atoll": ["Dharavandhoo", "Dhonfanu", "Thulhaadhoo"],
-    "Dhaalu Atoll": ["Kudahuvadhoo", "Meedhoo", "Rinbudhoo"],
-    "Laamu Atoll": ["Gan", "Fonadhoo", "Maavah", "Isdhoo"],
-    "Seenu Atoll": ["Hithadhoo", "Maradhoo", "Feydhoo", "Gan"],
-  };
+  // Group islands by atoll when data is fetched
+  useEffect(() => {
+    if (islandsData.length > 0) {
+      const grouped = islandsData.reduce((acc: Record<string, string[]>, island: any) => {
+        if (!acc[island.atoll]) {
+          acc[island.atoll] = [];
+        }
+        acc[island.atoll].push(island.name);
+        return acc;
+      }, {});
+      setAtollIslands(grouped);
+    }
+  }, [islandsData]);
+
+  // Get unique atolls from the islands data
+  const atolls = Object.keys(atollIslands).sort();
 
   const getTotalGuests = () => {
     const total = adults + children + infants;
@@ -152,12 +144,12 @@ export default function HeroSearch() {
           <Label className="text-sm font-medium text-gray-700 mb-1">
             Island
           </Label>
-          <Select value={island} onValueChange={setIsland} disabled={!destination || !islands[destination as keyof typeof islands]}>
+          <Select value={island} onValueChange={setIsland} disabled={!destination || !atollIslands[destination]}>
             <SelectTrigger data-testid="select-island" className="bg-white">
               <SelectValue placeholder="Choose Island" />
             </SelectTrigger>
             <SelectContent>
-              {destination && islands[destination as keyof typeof islands]?.map((isl) => (
+              {destination && atollIslands[destination]?.map((isl) => (
                 <SelectItem key={isl} value={isl}>
                   {isl}
                 </SelectItem>
