@@ -23,7 +23,7 @@ export default function Packages() {
     queryKey: ['/api/guest-houses'],
   });
 
-  const filteredPackages = (packages as any[])?.filter((pkg: any) => {
+  const filteredPackages = packages ? (packages as any[]).filter((pkg: any) => {
     const matchesSearch = pkg.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           pkg.description?.toLowerCase().includes(searchQuery.toLowerCase());
     
@@ -39,7 +39,7 @@ export default function Packages() {
                         (priceRange === "premium" && price > 1000);
     
     return matchesSearch && matchesDuration && matchesPrice;
-  });
+  }) : [];
 
   const getGuestHouseName = (guestHouseIds: string[]) => {
     if (!guestHouseIds || guestHouseIds.length === 0 || !guestHouses) return "Multiple Locations";
