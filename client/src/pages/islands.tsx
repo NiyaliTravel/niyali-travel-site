@@ -31,20 +31,16 @@ export default function Islands() {
   const [selectedAtoll, setSelectedAtoll] = useState('all');
 
   // Fetch islands data
-  const { data: islands, isLoading } = useQuery<Island[]>({
+  const { data: islandsData, isLoading } = useQuery<Island[]>({
     queryKey: ['/api/islands'],
     staleTime: 0,
     refetchOnMount: true,
     gcTime: 0,
   });
 
-  // Ensure islands is always an array
+  // Ensure islands is always an array - handle the response properly
+  const islands = islandsData || [];
   const islandsArray = Array.isArray(islands) ? islands : [];
-  
-  // Debug: Log the data
-  if (islands) {
-    console.log('Islands data received:', islandsArray.length, 'items');
-  }
 
   // Get unique atolls for filtering
   const atolls = ['all', ...Array.from(new Set(islandsArray.map(island => island.atoll)))];

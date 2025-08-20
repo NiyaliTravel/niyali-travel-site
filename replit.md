@@ -119,3 +119,7 @@ Preferred communication style: Simple, everyday language.
   - Moved Packages under Experiences menu item - both /experiences and /packages routes now show the packages page
   - Updated packages with detailed inclusions, exclusions, and pricing information from provided documents
   - Added 4 TME Retreat packages: Whale Shark Signature Experience ($2,365.50), Dive with Whale Shark ($1,762.80), Island Hopper Adventure ($1,498.00), and Romantic Escape for Two ($2,340.00)
+  - Fixed React Query data fetching issues for packages and islands pages - resolved caching and stale data problems
+  - Updated queryClient configuration to ensure fresh data fetching (staleTime: 0, retry: 1)
+  - Fixed array handling in packages and islands pages to properly display data
+  - Confirmed APIs returning correct data: 10 packages and 26 islands

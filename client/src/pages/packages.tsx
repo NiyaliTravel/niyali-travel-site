@@ -15,20 +15,16 @@ export default function Packages() {
   const [durationFilter, setDurationFilter] = useState("all");
   const [priceRange, setPriceRange] = useState("any");
 
-  const { data: packages, isLoading } = useQuery({
+  const { data: packagesData, isLoading } = useQuery({
     queryKey: ['/api/packages'],
     staleTime: 0,
     refetchOnMount: true,
     gcTime: 0,
   });
 
-  // Ensure packages is always an array
+  // Ensure packages is always an array - handle the response properly
+  const packages = packagesData || [];
   const packagesArray = Array.isArray(packages) ? packages : [];
-  
-  // Debug: Log the data
-  if (packages) {
-    console.log('Packages data received:', packagesArray.length, 'items');
-  }
 
   const { data: guestHouses } = useQuery({
     queryKey: ['/api/guest-houses'],
