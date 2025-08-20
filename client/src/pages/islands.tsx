@@ -31,9 +31,12 @@ export default function Islands() {
   const [selectedAtoll, setSelectedAtoll] = useState('all');
 
   // Fetch islands data
-  const { data: islands = [], isLoading } = useQuery<Island[]>({
+  const { data: islands = [], isLoading, error } = useQuery<Island[]>({
     queryKey: ['/api/islands'],
   });
+
+  // Debug logging
+  console.log('Islands loaded:', islands?.length, islands);
 
   // Get unique atolls for filtering
   const atolls = ['all', ...Array.from(new Set(islands.map(island => island.atoll)))];

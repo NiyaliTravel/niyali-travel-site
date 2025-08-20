@@ -15,15 +15,18 @@ export default function Packages() {
   const [durationFilter, setDurationFilter] = useState("all");
   const [priceRange, setPriceRange] = useState("any");
 
-  const { data: packages, isLoading } = useQuery({
+  const { data: packages = [], isLoading, error } = useQuery<any[]>({
     queryKey: ['/api/packages'],
   });
+
+  // Debug logging
+  console.log('Packages loaded:', packages?.length, packages);
 
   const { data: guestHouses } = useQuery({
     queryKey: ['/api/guest-houses'],
   });
 
-  const filteredPackages = packages ? (packages as any[]).filter((pkg: any) => {
+  const filteredPackages = (packages && Array.isArray(packages)) ? (packages as any[]).filter((pkg: any) => {
     const matchesSearch = pkg.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           pkg.description?.toLowerCase().includes(searchQuery.toLowerCase());
     
