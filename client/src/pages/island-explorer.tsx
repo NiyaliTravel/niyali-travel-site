@@ -105,19 +105,19 @@ export default function IslandExplorer() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-blue-100/50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-niyali-subtle via-white to-niyali-subtle/20">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-8 text-center"
         >
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold mb-4 text-niyali-navy">
             Interactive Maldives Island Explorer
           </h1>
-          <p className="text-gray-600">
-            Discover {islands.length} beautiful islands with guest houses across the Maldivian atolls
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Explore {islands.length} stunning islands across the Maldivian atolls. Click on any island to discover its unique features, guest houses, and activities.
           </p>
         </motion.div>
 
@@ -126,26 +126,33 @@ export default function IslandExplorer() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-6"
+          className="mb-8"
         >
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <Input
-              type="text"
-              placeholder="Search islands or atolls..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-10"
-              data-testid="input-island-search"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                data-testid="button-clear-search"
-              >
-                <X className="w-5 h-5" />
-              </button>
+          <div className="max-w-2xl mx-auto">
+            <div className="relative bg-white rounded-2xl shadow-xl p-2">
+              <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-niyali-primary w-5 h-5" />
+              <Input
+                type="text"
+                placeholder="Search islands or atolls..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-12 pr-12 h-14 text-lg border-0 focus:ring-2 focus:ring-niyali-primary rounded-xl"
+                data-testid="input-island-search"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-2"
+                  data-testid="button-clear-search"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+            {filteredIslands.length < islands.length && searchQuery && (
+              <p className="text-center mt-3 text-sm text-gray-600">
+                Showing {filteredIslands.length} of {islands.length} islands
+              </p>
             )}
           </div>
         </motion.div>
@@ -158,14 +165,14 @@ export default function IslandExplorer() {
             transition={{ delay: 0.2 }}
             className="lg:col-span-2"
           >
-            <Card className="overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white">
-                <CardTitle className="flex items-center gap-2">
-                  <Navigation className="w-5 h-5" />
-                  Maldives Map View
+            <Card className="overflow-hidden shadow-2xl border-0">
+              <CardHeader className="bg-gradient-to-r from-niyali-primary to-niyali-secondary text-white">
+                <CardTitle className="flex items-center gap-2 text-xl">
+                  <Navigation className="w-6 h-6" />
+                  Maldives Island Map
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-4 bg-gradient-to-b from-blue-50 to-blue-100">
+              <CardContent className="p-6 bg-gradient-to-b from-sky-50 via-blue-50 to-cyan-50">
                 <div 
                   ref={mapRef}
                   className="relative mx-auto"
@@ -290,16 +297,20 @@ export default function IslandExplorer() {
                   })}
 
                   {/* Map Legend */}
-                  <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-                    <h3 className="text-xs font-semibold mb-2">Legend</h3>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"></div>
-                        <span className="text-xs">Island with Guest Houses</span>
+                  <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md rounded-xl p-4 shadow-xl border border-gray-200">
+                    <h3 className="text-sm font-bold mb-3 text-niyali-navy">Map Legend</h3>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-5 h-5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 shadow-md"></div>
+                        <span className="text-xs font-medium">Island with Guest Houses</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded-full bg-gradient-to-r from-orange-500 to-red-500"></div>
-                        <span className="text-xs">Selected Island</span>
+                      <div className="flex items-center gap-3">
+                        <div className="w-5 h-5 rounded-full bg-gradient-to-r from-orange-500 to-red-500 shadow-md"></div>
+                        <span className="text-xs font-medium">Selected Island</span>
+                      </div>
+                      <div className="flex items-center gap-3 pt-2 border-t">
+                        <MapPin className="w-4 h-4 text-gray-500" />
+                        <span className="text-xs text-gray-600">Click to explore</span>
                       </div>
                     </div>
                   </div>

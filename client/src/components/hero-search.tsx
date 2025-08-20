@@ -144,16 +144,22 @@ export default function HeroSearch() {
           <Label className="text-sm font-medium text-gray-700 mb-1">
             Island
           </Label>
-          <Select value={island} onValueChange={setIsland} disabled={!destination || !atollIslands[destination]}>
+          <Select value={island} onValueChange={setIsland} disabled={!destination || !atollIslands[destination] || atollIslands[destination].length === 0}>
             <SelectTrigger data-testid="select-island" className="bg-white">
-              <SelectValue placeholder="Choose Island" />
+              <SelectValue placeholder={destination ? "Choose Island" : "Select Atoll First"} />
             </SelectTrigger>
             <SelectContent>
-              {destination && atollIslands[destination]?.map((isl) => (
-                <SelectItem key={isl} value={isl}>
-                  {isl}
-                </SelectItem>
-              ))}
+              {destination && atollIslands[destination] && atollIslands[destination].length > 0 ? (
+                atollIslands[destination].map((isl) => (
+                  <SelectItem key={isl} value={isl}>
+                    {isl}
+                  </SelectItem>
+                ))
+              ) : (
+                <div className="px-2 py-1.5 text-sm text-gray-500">
+                  {destination ? "No islands available" : "Please select an atoll first"}
+                </div>
+              )}
             </SelectContent>
           </Select>
         </div>
