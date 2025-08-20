@@ -105,7 +105,7 @@ Preferred communication style: Simple, everyday language.
   - Fixed navigation and hero search component TypeScript errors
   - Integrated live islands data fetching from backend API for dynamic island selection by atoll
   - Created new Islands page at /islands with grid layout, search, and atoll filtering
-  - Changed navigation menu: Replaced "Destinations" with "Islands" as primary menu item
-  - Fixed Hero Search Bar island selection to properly enable when atoll is selected
-  - Enhanced Island Explorer with improved styling, better color scheme matching brand
+  - Added Islands as separate menu item in navigation
+  - Changed Hero Search Bar label from "Destination" to "Atolls" for clarity
+  - Enhanced Island Explorer with improved styling and better color scheme
   - Fixed React rendering errors and SVG element issues in Island Explorer

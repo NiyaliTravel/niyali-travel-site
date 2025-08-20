@@ -23,9 +23,10 @@ export default function Navigation() {
   });
 
   const navItems = [
-    { href: "/islands", label: "Islands" },
+    { href: "/destinations", label: "Destinations" },
     { href: "/experiences", label: "Experiences" },
     { href: "/guest-houses", label: "Guest Houses", hasDropdown: true },
+    { href: "/islands", label: "Islands" },
     { href: "/island-explorer", label: "Island Explorer" },
     { href: "/ferry-schedule", label: "Ferry" },
     { href: "/domestic-airlines", label: "Airlines" },

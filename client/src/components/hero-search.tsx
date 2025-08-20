@@ -120,7 +120,7 @@ export default function HeroSearch() {
         <div className="lg:col-span-1">
           <Label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
             <MapPin className="w-4 h-4" />
-            Destination
+            Atolls
           </Label>
           <Select value={destination} onValueChange={(value) => {
             setDestination(value);
@@ -144,22 +144,16 @@ export default function HeroSearch() {
           <Label className="text-sm font-medium text-gray-700 mb-1">
             Island
           </Label>
-          <Select value={island} onValueChange={setIsland} disabled={!destination || !atollIslands[destination] || atollIslands[destination].length === 0}>
+          <Select value={island} onValueChange={setIsland} disabled={!destination}>
             <SelectTrigger data-testid="select-island" className="bg-white">
-              <SelectValue placeholder={destination ? "Choose Island" : "Select Atoll First"} />
+              <SelectValue placeholder="Choose Island" />
             </SelectTrigger>
             <SelectContent>
-              {destination && atollIslands[destination] && atollIslands[destination].length > 0 && (
-                atollIslands[destination].map((isl) => {
-                  // Only render SelectItem if island name is not empty
-                  if (!isl || isl.trim() === '') return null;
-                  return (
-                    <SelectItem key={isl} value={isl}>
-                      {isl}
-                    </SelectItem>
-                  );
-                })
-              )}
+              {destination && atollIslands[destination]?.map((isl) => (
+                <SelectItem key={isl} value={isl || 'unknown'}>
+                  {isl}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
