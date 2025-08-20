@@ -211,7 +211,7 @@ export default function IslandExplorer() {
                     const { x, y } = latLngToXY(centerLat, centerLng);
 
                     return (
-                      <motion.g key={atollName}>
+                      <g key={atollName}>
                         {/* Atoll boundary circle */}
                         <circle
                           cx={x}
@@ -231,7 +231,7 @@ export default function IslandExplorer() {
                         >
                           {atollName}
                         </text>
-                      </motion.g>
+                      </g>
                     );
                   })}
 
@@ -327,13 +327,13 @@ export default function IslandExplorer() {
             className="space-y-4"
           >
             {selectedIsland ? (
-              <Card className="sticky top-4">
-                <CardHeader className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
+              <Card className="sticky top-4 shadow-2xl">
+                <CardHeader className="bg-gradient-to-r from-niyali-primary to-niyali-secondary text-white">
                   <CardTitle className="flex items-center justify-between">
-                    <span>{selectedIsland.name}</span>
+                    <span className="text-xl">{selectedIsland.name}</span>
                     <button
                       onClick={() => setSelectedIsland(null)}
-                      className="hover:bg-white/20 rounded-full p-1"
+                      className="hover:bg-white/20 rounded-full p-1 transition-colors"
                       data-testid="button-close-details"
                     >
                       <X className="w-4 h-4" />

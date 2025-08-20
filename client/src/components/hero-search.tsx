@@ -149,16 +149,16 @@ export default function HeroSearch() {
               <SelectValue placeholder={destination ? "Choose Island" : "Select Atoll First"} />
             </SelectTrigger>
             <SelectContent>
-              {destination && atollIslands[destination] && atollIslands[destination].length > 0 ? (
-                atollIslands[destination].map((isl) => (
-                  <SelectItem key={isl} value={isl}>
-                    {isl}
-                  </SelectItem>
-                ))
-              ) : (
-                <div className="px-2 py-1.5 text-sm text-gray-500">
-                  {destination ? "No islands available" : "Please select an atoll first"}
-                </div>
+              {destination && atollIslands[destination] && atollIslands[destination].length > 0 && (
+                atollIslands[destination].map((isl) => {
+                  // Only render SelectItem if island name is not empty
+                  if (!isl || isl.trim() === '') return null;
+                  return (
+                    <SelectItem key={isl} value={isl}>
+                      {isl}
+                    </SelectItem>
+                  );
+                })
               )}
             </SelectContent>
           </Select>
