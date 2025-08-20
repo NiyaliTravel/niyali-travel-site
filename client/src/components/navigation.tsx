@@ -26,6 +26,7 @@ export default function Navigation() {
     { href: "/destinations", label: "Atolls" },
     { href: "/experiences", label: "Experiences" },
     { href: "/guest-houses", label: "Guest Houses" },
+    { href: "/packages", label: "Packages" },
     { href: "/islands", label: "Islands" },
     { href: "/island-explorer", label: "Island Explorer" },
     { href: "/ferry-schedule", label: "Ferry" },

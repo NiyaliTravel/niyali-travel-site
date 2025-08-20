@@ -192,6 +192,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Packages routes
+  app.get('/api/packages', async (req, res) => {
+    try {
+      const packages = await storage.getPackages();
+      res.json(packages);
+    } catch (error) {
+      console.error("Error fetching packages:", error);
+      res.status(500).json({ message: "Failed to fetch packages" });
+    }
+  });
+
   // Guest Houses routes  
   app.get('/api/guest-houses', async (req, res) => {
     try {

@@ -19,6 +19,7 @@ import AdminAvailability from "@/pages/admin-availability";
 import BookingEngine from "@/pages/booking-engine";
 import IslandExplorer from "@/pages/island-explorer";
 import Islands from "@/pages/islands";
+import Packages from "@/pages/packages";
 
 function Router() {
   return (
@@ -28,6 +29,7 @@ function Router() {
       <Route path="/experiences" component={Experiences} />
       <Route path="/guest-houses" component={GuestHouses} />
       <Route path="/islands" component={Islands} />
+      <Route path="/packages" component={Packages} />
       <Route path="/ferry-schedule" component={FerrySchedule} />
       <Route path="/domestic-airlines" component={DomesticAirlines} />
       <Route path="/agent-portal" component={AgentPortal} />

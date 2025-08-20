@@ -25,6 +25,8 @@ import {
   type InsertPayment
 } from "@shared/schema";
 
+import { packages } from "@shared/schema";
+
 export interface IStorage {
   // User operations
   getUser(id: string): Promise<User | undefined>;
@@ -112,7 +114,9 @@ export interface IStorage {
 
   // Package methods
   getAllPackages(): Promise<Package[]>;
+  getPackages(): Promise<Package[]>;
   getPackage(id: string): Promise<Package | null>;
+  getPackageById(id: string): Promise<Package | null>;
   createPackage(data: InsertPackage): Promise<Package>;
   updatePackage(id: string, data: Partial<InsertPackage>): Promise<Package | null>;
 
@@ -550,7 +554,16 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(packages).where(eq(packages.isActive, true));
   }
 
+  async getPackages(): Promise<Package[]> {
+    return await db.select().from(packages).where(eq(packages.isActive, true));
+  }
+
   async getPackage(id: string): Promise<Package | null> {
+    const [pkg] = await db.select().from(packages).where(eq(packages.id, id));
+    return pkg || null;
+  }
+
+  async getPackageById(id: string): Promise<Package | null> {
     const [pkg] = await db.select().from(packages).where(eq(packages.id, id));
     return pkg || null;
   }
