@@ -25,7 +25,7 @@ export default function Navigation() {
   const navItems = [
     { href: "/destinations", label: "Destinations" },
     { href: "/experiences", label: "Experiences" },
-    { href: "/guest-houses", label: "Guest Houses", hasDropdown: true },
+    { href: "/guest-houses", label: "Guest Houses" },
     { href: "/islands", label: "Islands" },
     { href: "/island-explorer", label: "Island Explorer" },
     { href: "/ferry-schedule", label: "Ferry" },
@@ -52,57 +52,16 @@ export default function Navigation() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
-              item.hasDropdown ? (
-                <DropdownMenu key={item.href}>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className={`text-gray-700 hover:text-niyali-navy transition-colors font-normal px-0 ${
-                        location === item.href ? 'text-niyali-navy font-medium' : ''
-                      }`}
-                      data-testid={`nav-${item.label.toLowerCase().replace(' ', '-')}`}
-                    >
-                      {item.label}
-                      <ChevronDown className="ml-1 h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-64">
-                    <DropdownMenuItem asChild>
-                      <Link href="/guest-houses" className="cursor-pointer">
-                        <span className="font-medium">All Guest Houses</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    {guestHouses.slice(0, 8).map((gh: any) => (
-                      <DropdownMenuItem key={gh.id} asChild>
-                        <Link href={`/guest-houses/${gh.id}`} className="cursor-pointer">
-                          <div className="flex flex-col">
-                            <span className="font-medium">{gh.name}</span>
-                            <span className="text-xs text-gray-500">{gh.island}, {gh.atoll}</span>
-                          </div>
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
-                    {guestHouses.length > 8 && (
-                      <DropdownMenuItem asChild>
-                        <Link href="/guest-houses" className="cursor-pointer text-center">
-                          <span className="text-sm font-medium text-niyali-navy">View All →</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`text-gray-700 hover:text-niyali-navy transition-colors ${
-                    location === item.href ? 'text-niyali-navy font-medium' : ''
-                  }`}
-                  data-testid={`nav-${item.label.toLowerCase().replace(' ', '-')}`}
-                >
-                  {item.label}
-                </Link>
-              )
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`text-gray-700 hover:text-niyali-navy transition-colors ${
+                  location === item.href ? 'text-niyali-navy font-medium' : ''
+                }`}
+                data-testid={`nav-${item.label.toLowerCase().replace(' ', '-')}`}
+              >
+                {item.label}
+              </Link>
             ))}
             <Link 
               href="/agent-login"
