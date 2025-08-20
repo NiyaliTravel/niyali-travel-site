@@ -116,3 +116,5 @@ Preferred communication style: Simple, everyday language.
   - Added specialized packages for Madi Grand Guest House including Romantic Lagoon Escape, Explorer's Island Quest, Family Discovery, Dive & Discover, Freediver's Ocean Flow, and Ocean Harmony Experience
   - Fixed blank page issues by resolving empty Select values and adding proper Footer components
   - Simplified Guest Houses navigation by removing dropdown and making it a direct link
+  - Moved Packages under Experiences menu item - both /experiences and /packages routes now show the packages page
+  - Updated packages with detailed inclusions, exclusions, and pricing information from provided documents

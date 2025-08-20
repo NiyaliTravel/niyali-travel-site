@@ -78,7 +78,7 @@ export default function Packages() {
         {/* Hero Section */}
         <div className="bg-gradient-to-r from-teal-50 to-sky-50 py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-4xl font-bold text-niyali-navy mb-4">Curated Travel Packages</h1>
+            <h1 className="text-4xl font-bold text-niyali-navy mb-4">Curated Travel Experiences</h1>
             <p className="text-lg text-gray-600 max-w-3xl">
               Discover our handpicked experiences combining accommodation, activities, and authentic Maldivian adventures. 
               All packages include transfers and daily breakfast.
