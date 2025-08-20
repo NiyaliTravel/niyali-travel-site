@@ -7,23 +7,40 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, Clock, Users, Check, MapPin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 
 export default function Packages() {
   const [searchQuery, setSearchQuery] = useState("");
   const [durationFilter, setDurationFilter] = useState("all");
   const [priceRange, setPriceRange] = useState("any");
+  const [testPackages, setTestPackages] = useState<any[]>([]);
 
-  const { data: packagesData, isLoading } = useQuery({
+  // Direct fetch test to bypass React Query
+  useEffect(() => {
+    fetch('/api/packages')
+      .then(res => res.json())
+      .then(data => {
+        console.log('Direct fetch result:', data);
+        setTestPackages(data || []);
+      })
+      .catch(err => console.error('Direct fetch error:', err));
+  }, []);
+
+  const { data: packagesData, isLoading, error } = useQuery({
     queryKey: ['/api/packages'],
     staleTime: 0,
     refetchOnMount: true,
     gcTime: 0,
+    refetchOnWindowFocus: true,
   });
 
-  // Ensure packages is always an array - handle the response properly
-  const packages = packagesData || [];
+  // Debug both methods
+  console.log('React Query result:', { packagesData, isLoading, error });
+  console.log('Direct fetch packages:', testPackages);
+
+  // Use direct fetch if React Query fails
+  const packages = packagesData || testPackages || [];
   const packagesArray = Array.isArray(packages) ? packages : [];
 
   const { data: guestHouses } = useQuery({

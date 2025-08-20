@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { MapPin, Users, Home, Activity, Search } from 'lucide-react';
@@ -29,17 +29,33 @@ interface Island {
 export default function Islands() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedAtoll, setSelectedAtoll] = useState('all');
+  const [testIslands, setTestIslands] = useState<Island[]>([]);
+
+  // Direct fetch test to bypass React Query
+  useEffect(() => {
+    fetch('/api/islands')
+      .then(res => res.json())
+      .then(data => {
+        console.log('Direct fetch islands result:', data);
+        setTestIslands(data || []);
+      })
+      .catch(err => console.error('Direct fetch islands error:', err));
+  }, []);
 
   // Fetch islands data
-  const { data: islandsData, isLoading } = useQuery<Island[]>({
+  const { data: islandsData, isLoading, error } = useQuery<Island[]>({
     queryKey: ['/api/islands'],
     staleTime: 0,
     refetchOnMount: true,
     gcTime: 0,
   });
 
-  // Ensure islands is always an array - handle the response properly
-  const islands = islandsData || [];
+  // Debug both methods
+  console.log('React Query islands result:', { islandsData, isLoading, error });
+  console.log('Direct fetch islands:', testIslands);
+
+  // Use direct fetch if React Query fails
+  const islands = islandsData || testIslands || [];
   const islandsArray = Array.isArray(islands) ? islands : [];
 
   // Get unique atolls for filtering
