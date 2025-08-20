@@ -23,7 +23,7 @@ export default function Navigation() {
   });
 
   const navItems = [
-    { href: "/destinations", label: "Destinations" },
+    { href: "/destinations", label: "Atolls" },
     { href: "/experiences", label: "Experiences" },
     { href: "/guest-houses", label: "Guest Houses" },
     { href: "/islands", label: "Islands" },
