@@ -31,18 +31,20 @@ export default function Islands() {
   const [selectedAtoll, setSelectedAtoll] = useState('all');
 
   // Fetch islands data
-  const { data: islands = [], isLoading, error } = useQuery<Island[]>({
+  const { data: islands, isLoading } = useQuery<Island[]>({
     queryKey: ['/api/islands'],
+    staleTime: 0,
+    refetchOnMount: true,
   });
 
-  // Debug logging
-  console.log('Islands loaded:', islands?.length, islands);
+  // Ensure islands is always an array
+  const islandsArray = Array.isArray(islands) ? islands : [];
 
   // Get unique atolls for filtering
-  const atolls = ['all', ...Array.from(new Set(islands.map(island => island.atoll)))];
+  const atolls = ['all', ...Array.from(new Set(islandsArray.map(island => island.atoll)))];
 
   // Filter islands based on search and atoll selection
-  const filteredIslands = islands.filter(island => {
+  const filteredIslands = islandsArray.filter(island => {
     const matchesSearch = island.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           island.atoll.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesAtoll = selectedAtoll === 'all' || island.atoll === selectedAtoll;
@@ -60,7 +62,7 @@ export default function Islands() {
             Explore Maldivian Islands
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover {islands.length} beautiful islands across the Maldivian atolls, 
+            Discover {islandsArray.length} beautiful islands across the Maldivian atolls, 
             each offering unique experiences and authentic local culture
           </p>
         </div>

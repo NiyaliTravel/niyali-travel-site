@@ -15,18 +15,20 @@ export default function Packages() {
   const [durationFilter, setDurationFilter] = useState("all");
   const [priceRange, setPriceRange] = useState("any");
 
-  const { data: packages = [], isLoading, error } = useQuery<any[]>({
+  const { data: packages, isLoading } = useQuery({
     queryKey: ['/api/packages'],
+    staleTime: 0,
+    refetchOnMount: true,
   });
 
-  // Debug logging
-  console.log('Packages loaded:', packages?.length, packages);
+  // Ensure packages is always an array
+  const packagesArray = Array.isArray(packages) ? packages : [];
 
   const { data: guestHouses } = useQuery({
     queryKey: ['/api/guest-houses'],
   });
 
-  const filteredPackages = (packages && Array.isArray(packages)) ? (packages as any[]).filter((pkg: any) => {
+  const filteredPackages = packagesArray.filter((pkg: any) => {
     const matchesSearch = pkg.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           pkg.description?.toLowerCase().includes(searchQuery.toLowerCase());
     
@@ -42,7 +44,7 @@ export default function Packages() {
                         (priceRange === "premium" && price > 1000);
     
     return matchesSearch && matchesDuration && matchesPrice;
-  }) : [];
+  });
 
   const getGuestHouseName = (guestHouseIds: string[]) => {
     if (!guestHouseIds || guestHouseIds.length === 0 || !guestHouses) return "Multiple Locations";
