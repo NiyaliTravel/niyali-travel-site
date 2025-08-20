@@ -180,10 +180,17 @@ export default function Packages() {
                         ))}
                         {pkg.inclusions.length > 3 && (
                           <span className="text-xs text-gray-500">
-                            +{pkg.inclusions.length - 3} more
+                            +{pkg.inclusions.length - 3} more inclusions
                           </span>
                         )}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Exclusions preview */}
+                  {pkg.exclusions && pkg.exclusions.length > 0 && (
+                    <div className="text-xs text-gray-500 mb-2">
+                      <span className="font-semibold">Optional add-ons available</span>
                     </div>
                   )}
 
