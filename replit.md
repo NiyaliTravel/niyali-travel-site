@@ -118,3 +118,4 @@ Preferred communication style: Simple, everyday language.
   - Simplified Guest Houses navigation by removing dropdown and making it a direct link
   - Moved Packages under Experiences menu item - both /experiences and /packages routes now show the packages page
   - Updated packages with detailed inclusions, exclusions, and pricing information from provided documents
+  - Added 4 TME Retreat packages: Whale Shark Signature Experience ($2,365.50), Dive with Whale Shark ($1,762.80), Island Hopper Adventure ($1,498.00), and Romantic Escape for Two ($2,340.00)
