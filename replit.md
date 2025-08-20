@@ -109,3 +109,10 @@ Preferred communication style: Simple, everyday language.
   - Changed Hero Search Bar label from "Destination" to "Atolls" for clarity
   - Enhanced Island Explorer with improved styling and better color scheme
   - Fixed React rendering errors and SVG element issues in Island Explorer
+  - Changed navigation menu from "Destinations" to "Atolls" for consistency
+  - Removed VR Tour buttons from guest house cards to clean up interface
+  - Made booking buttons functional by linking them to booking engine with guest house parameters
+  - Added 6 new guest houses: TME Retreat, Ari Grand, The Arrival, Noomuraka Inn, Noomo Hotels, and Madi Grand Guest House
+  - Added specialized packages for Madi Grand Guest House including Romantic Lagoon Escape, Explorer's Island Quest, Family Discovery, Dive & Discover, Freediver's Ocean Flow, and Ocean Harmony Experience
+  - Fixed blank page issues by resolving empty Select values and adding proper Footer components
+  - Simplified Guest Houses navigation by removing dropdown and making it a direct link

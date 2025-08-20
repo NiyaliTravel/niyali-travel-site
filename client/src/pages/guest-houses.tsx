@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Star, MapPin, Users, Wifi, Car, Utensils, Camera } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { Link } from "wouter";
 
 export default function GuestHouses() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -167,12 +168,7 @@ export default function GuestHouses() {
                   <Star className="w-4 h-4 text-yellow-400 mr-1" />
                   <span className="text-sm font-medium">4.9</span>
                 </div>
-                <div className="absolute bottom-4 right-4">
-                  <Button size="sm" variant="secondary" className="bg-white bg-opacity-90" data-testid="button-vr-niyama">
-                    <Camera className="w-4 h-4 mr-1" />
-                    VR Tour
-                  </Button>
-                </div>
+
               </div>
               
               <CardContent className="p-6">
@@ -204,8 +200,12 @@ export default function GuestHouses() {
                     <span className="text-gray-500">/night</span>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" data-testid="button-details-niyama">Details</Button>
-                    <Button size="sm" className="niyali-gradient text-white" data-testid="button-book-niyama">Book Now</Button>
+                    <Link href="/booking?guestHouse=niyama">
+                      <Button size="sm" variant="outline" data-testid="button-details-niyama">Details</Button>
+                    </Link>
+                    <Link href="/booking?guestHouse=niyama">
+                      <Button size="sm" className="niyali-gradient text-white" data-testid="button-book-niyama">Book Now</Button>
+                    </Link>
                   </div>
                 </div>
               </CardContent>
@@ -257,8 +257,12 @@ export default function GuestHouses() {
                     <span className="text-gray-500">/night</span>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" data-testid="button-details-coral">Details</Button>
-                    <Button size="sm" className="niyali-gradient text-white" data-testid="button-book-coral">Book Now</Button>
+                    <Link href="/booking?guestHouse=coral">
+                      <Button size="sm" variant="outline" data-testid="button-details-coral">Details</Button>
+                    </Link>
+                    <Link href="/booking?guestHouse=coral">
+                      <Button size="sm" className="niyali-gradient text-white" data-testid="button-book-coral">Book Now</Button>
+                    </Link>
                   </div>
                 </div>
               </CardContent>
@@ -315,8 +319,12 @@ export default function GuestHouses() {
                     <span className="text-gray-500">/night</span>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" data-testid="button-details-azure">Details</Button>
-                    <Button size="sm" className="niyali-gradient text-white" data-testid="button-book-azure">Book Now</Button>
+                    <Link href="/booking?guestHouse=azure">
+                      <Button size="sm" variant="outline" data-testid="button-details-azure">Details</Button>
+                    </Link>
+                    <Link href="/booking?guestHouse=azure">
+                      <Button size="sm" className="niyali-gradient text-white" data-testid="button-book-azure">Book Now</Button>
+                    </Link>
                   </div>
                 </div>
               </CardContent>
