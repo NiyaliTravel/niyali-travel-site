@@ -11,13 +11,13 @@ import { useState } from "react";
 
 export default function GuestHouses() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedAtoll, setSelectedAtoll] = useState("");
-  const [priceRange, setPriceRange] = useState("");
+  const [selectedAtoll, setSelectedAtoll] = useState("all");
+  const [priceRange, setPriceRange] = useState("any");
 
   const { data: guestHouses, isLoading } = useQuery({
     queryKey: ['/api/guest-houses', { 
       search: searchQuery, 
-      atoll: selectedAtoll,
+      atoll: selectedAtoll === 'all' ? '' : selectedAtoll,
       featured: 'false'
     }],
   });
@@ -104,7 +104,7 @@ export default function GuestHouses() {
                     <SelectValue placeholder="All Atolls" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Atolls</SelectItem>
+                    <SelectItem value="all">All Atolls</SelectItem>
                     {atolls.map((atoll) => (
                       <SelectItem key={atoll} value={atoll}>{atoll}</SelectItem>
                     ))}
@@ -118,7 +118,7 @@ export default function GuestHouses() {
                     <SelectValue placeholder="Any Price" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Any Price</SelectItem>
+                    <SelectItem value="any">Any Price</SelectItem>
                     <SelectItem value="0-200">$0 - $200</SelectItem>
                     <SelectItem value="200-500">$200 - $500</SelectItem>
                     <SelectItem value="500-1000">$500 - $1000</SelectItem>

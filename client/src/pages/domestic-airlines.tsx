@@ -119,7 +119,7 @@ export default function DomesticAirlines() {
               <div>
                 <label className="block text-sm font-medium mb-2">To</label>
                 <Input
-                  placeholder="Destination"
+                  placeholder="To"
                   value={searchFilters.to}
                   onChange={(e) => handleFilterChange('to', e.target.value)}
                   data-testid="input-destination"
@@ -141,7 +141,7 @@ export default function DomesticAirlines() {
                     <SelectValue placeholder="All types" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All types</SelectItem>
+                    <SelectItem value="all">All types</SelectItem>
                     <SelectItem value="seaplane">Seaplane</SelectItem>
                     <SelectItem value="domestic_plane">Domestic Plane</SelectItem>
                   </SelectContent>
