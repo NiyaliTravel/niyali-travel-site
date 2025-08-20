@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Navigation from '@/components/navigation';
+import Footer from '@/components/footer';
 
 interface Island {
   id: string;
@@ -230,6 +231,7 @@ export default function Islands() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

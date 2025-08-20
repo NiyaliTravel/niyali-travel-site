@@ -149,11 +149,14 @@ export default function HeroSearch() {
               <SelectValue placeholder="Choose Island" />
             </SelectTrigger>
             <SelectContent>
-              {destination && atollIslands[destination]?.map((isl) => (
-                <SelectItem key={isl} value={isl || 'unknown'}>
-                  {isl}
-                </SelectItem>
-              ))}
+              {destination && atollIslands[destination]?.map((isl) => {
+                if (!isl) return null;
+                return (
+                  <SelectItem key={isl} value={isl}>
+                    {isl}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         </div>
