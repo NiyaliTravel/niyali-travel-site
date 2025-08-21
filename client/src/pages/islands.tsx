@@ -31,31 +31,31 @@ export default function Islands() {
   const [selectedAtoll, setSelectedAtoll] = useState('all');
   const [testIslands, setTestIslands] = useState<Island[]>([]);
 
-  // Direct fetch test to bypass React Query
+  // Direct fetch as primary method for production
   useEffect(() => {
     fetch('/api/islands')
-      .then(res => res.json())
-      .then(data => {
-        console.log('Direct fetch islands result:', data);
-        setTestIslands(data || []);
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
       })
-      .catch(err => console.error('Direct fetch islands error:', err));
+      .then(data => {
+        if (Array.isArray(data)) {
+          setTestIslands(data);
+        }
+      })
+      .catch(err => console.error('Failed to fetch islands:', err));
   }, []);
 
   // Fetch islands data
-  const { data: islandsData, isLoading, error } = useQuery<Island[]>({
+  const { data: islandsData, isLoading } = useQuery<Island[]>({
     queryKey: ['/api/islands'],
     staleTime: 0,
     refetchOnMount: true,
     gcTime: 0,
   });
 
-  // Debug both methods
-  console.log('React Query islands result:', { islandsData, isLoading, error });
-  console.log('Direct fetch islands:', testIslands);
-
-  // Use direct fetch if React Query fails
-  const islands = islandsData || testIslands || [];
+  // Use direct fetch as primary, React Query as fallback
+  const islands = testIslands.length > 0 ? testIslands : (islandsData || []);
   const islandsArray = Array.isArray(islands) ? islands : [];
 
   // Get unique atolls for filtering

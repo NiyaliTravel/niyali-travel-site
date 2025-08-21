@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -22,26 +22,26 @@ import Packages from "@/pages/packages";
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/destinations" component={Destinations} />
-      <Route path="/experiences" component={Packages} />
-      <Route path="/guest-houses" component={GuestHouses} />
-      <Route path="/islands" component={Islands} />
-      <Route path="/packages" component={Packages} />
-      <Route path="/ferry-schedule" component={FerrySchedule} />
-      <Route path="/domestic-airlines" component={DomesticAirlines} />
-      <Route path="/agent-portal" component={AgentPortal} />
-      <Route path="/agent-login" component={AgentLogin} />
-      <Route path="/traveler-portal" component={TravelerPortal} />
-      <Route path="/admin-login" component={AdminLogin} />
-      <Route path="/admin" component={AdminDashboard} />
-      <Route path="/admin/availability" component={AdminAvailability} />
-      <Route path="/booking" component={BookingEngine} />
-      <Route path="/island-explorer" component={IslandExplorer} />
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/destinations" element={<Destinations />} />
+      <Route path="/experiences" element={<Packages />} />
+      <Route path="/guest-houses" element={<GuestHouses />} />
+      <Route path="/islands" element={<Islands />} />
+      <Route path="/packages" element={<Packages />} />
+      <Route path="/ferry-schedule" element={<FerrySchedule />} />
+      <Route path="/domestic-airlines" element={<DomesticAirlines />} />
+      <Route path="/agent-portal" element={<AgentPortal />} />
+      <Route path="/agent-login" element={<AgentLogin />} />
+      <Route path="/traveler-portal" element={<TravelerPortal />} />
+      <Route path="/admin-login" element={<AdminLogin />} />
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/admin/availability" element={<AdminAvailability />} />
+      <Route path="/booking" element={<BookingEngine />} />
+      <Route path="/island-explorer" element={<IslandExplorer />} />
       {/* Fallback to 404 */}
-      <Route component={NotFound} />
-    </Switch>
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 
@@ -50,7 +50,28 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
-        <Router />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/destinations" element={<Destinations />} />
+            <Route path="/experiences" element={<Packages />} />
+            <Route path="/guest-houses" element={<GuestHouses />} />
+            <Route path="/islands" element={<Islands />} />
+            <Route path="/packages" element={<Packages />} />
+            <Route path="/ferry-schedule" element={<FerrySchedule />} />
+            <Route path="/domestic-airlines" element={<DomesticAirlines />} />
+            <Route path="/agent-portal" element={<AgentPortal />} />
+            <Route path="/agent-login" element={<AgentLogin />} />
+            <Route path="/traveler-portal" element={<TravelerPortal />} />
+            <Route path="/admin-login" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/availability" element={<AdminAvailability />} />
+            <Route path="/booking" element={<BookingEngine />} />
+            <Route path="/island-explorer" element={<IslandExplorer />} />
+            {/* Fallback to 404 */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
   );

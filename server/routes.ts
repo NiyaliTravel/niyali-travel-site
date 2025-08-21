@@ -728,15 +728,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Package routes
-  app.get('/api/packages', async (req, res) => {
-    try {
-      const packages = await storage.getAllPackages();
-      res.json(packages);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch packages', error: (error as Error).message });
-    }
-  });
+  // Package routes (removed duplicate - using the one at line 196)
 
   app.post('/api/packages', verifyAdmin, async (req, res) => {
     try {

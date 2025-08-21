@@ -16,31 +16,30 @@ export default function Packages() {
   const [priceRange, setPriceRange] = useState("any");
   const [testPackages, setTestPackages] = useState<any[]>([]);
 
-  // Direct fetch test to bypass React Query
+  // Direct fetch as primary method for production
   useEffect(() => {
     fetch('/api/packages')
-      .then(res => res.json())
-      .then(data => {
-        console.log('Direct fetch result:', data);
-        setTestPackages(data || []);
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
       })
-      .catch(err => console.error('Direct fetch error:', err));
+      .then(data => {
+        if (Array.isArray(data)) {
+          setTestPackages(data);
+        }
+      })
+      .catch(err => console.error('Failed to fetch packages:', err));
   }, []);
 
-  const { data: packagesData, isLoading, error } = useQuery({
+  const { data: packagesData, isLoading } = useQuery({
     queryKey: ['/api/packages'],
     staleTime: 0,
     refetchOnMount: true,
     gcTime: 0,
-    refetchOnWindowFocus: true,
   });
 
-  // Debug both methods
-  console.log('React Query result:', { packagesData, isLoading, error });
-  console.log('Direct fetch packages:', testPackages);
-
-  // Use direct fetch if React Query fails
-  const packages = packagesData || testPackages || [];
+  // Use direct fetch as primary, React Query as fallback
+  const packages = testPackages.length > 0 ? testPackages : (packagesData || []);
   const packagesArray = Array.isArray(packages) ? packages : [];
 
   const { data: guestHouses } = useQuery({
