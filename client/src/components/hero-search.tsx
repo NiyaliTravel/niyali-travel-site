@@ -32,7 +32,8 @@ export default function HeroSearch() {
 
   // Fetch islands from API
   const { data: islandsData = [] } = useQuery<any[]>({
-    queryKey: ['/api/islands'],
+    queryKey: ['islands'],
+    queryFn: () => fetch('/api/islands').then(res => res.json()),
   });
 
   // Group islands by atoll when data is fetched

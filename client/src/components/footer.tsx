@@ -21,6 +21,7 @@ export default function Footer() {
     { href: "/cancellation", label: "Cancellation" },
     { href: "/agent-portal", label: "Agent Support" },
     { href: "/contact", label: "Contact Us" },
+    { href: "/admin-login", label: "Admin" },
   ];
 
 
@@ -83,50 +84,32 @@ export default function Footer() {
               ))}
             </ul>
           </div>
-          
+
           {/* Contact Info */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Contact</h4>
-            <div className="space-y-3 text-gray-300">
-              <div className="flex items-center space-x-2">
-                <Phone className="w-5 h-5" />
-                <a 
-                  href="tel:+9609107338" 
-                  className="hover:text-white transition-colors"
-                  data-testid="footer-phone"
-                >
-                  +960 910 7338
+            <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
+            <ul className="space-y-3 text-gray-300">
+              <li className="flex items-start">
+                <MapPin className="w-5 h-5 mr-3 mt-1 flex-shrink-0" />
+                <span>Male, Maldives</span>
+              </li>
+              <li className="flex items-start">
+                <Mail className="w-5 h-5 mr-3 mt-1 flex-shrink-0" />
+                <a href="mailto:info@niyalitravel.com" className="hover:text-white transition-colors">
+                  info@niyalitravel.com
                 </a>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Mail className="w-5 h-5" />
-                <a 
-                  href="mailto:hello@niyalitravel.com" 
-                  className="hover:text-white transition-colors"
-                  data-testid="footer-email"
-                >
-                  hello@niyalitravel.com
+              </li>
+              <li className="flex items-start">
+                <Phone className="w-5 h-5 mr-3 mt-1 flex-shrink-0" />
+                <a href="tel:+9601234567" className="hover:text-white transition-colors">
+                  +960 123-4567
                 </a>
-              </div>
-              <div className="flex items-center space-x-2">
-                <MapPin className="w-5 h-5" />
-                <span>Malé, Maldives</span>
-              </div>
-            </div>
+              </li>
+            </ul>
           </div>
         </div>
-        
-        <div className="border-t border-gray-700 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between">
-          <p className="text-gray-300 text-center md:text-left mb-4 md:mb-0">
-            © {currentYear} Niyali Travel. All rights reserved. | 
-            <Link href="/privacy" className="hover:text-white ml-1">Privacy Policy</Link> | 
-            <Link href="/terms" className="hover:text-white ml-1">Terms of Service</Link>
-          </p>
-          <div className="flex items-center space-x-4 text-gray-300">
-            <span>Powered by AI & Blockchain</span>
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span className="text-green-400">Online</span>
-          </div>
+        <div className="mt-12 border-t border-gray-700 pt-8 text-center text-gray-400">
+          <p>&copy; {currentYear} Niyali Travel. All rights reserved.</p>
         </div>
       </div>
     </footer>

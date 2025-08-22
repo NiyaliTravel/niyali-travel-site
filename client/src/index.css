@@ -119,7 +119,7 @@
 
 @layer base {
   * {
-    @apply border;
+    @apply border-none;
   }
 
   body {
@@ -297,6 +297,10 @@
 .calendar-day.selected {
   background: var(--niyali-gradient);
   color: white;
+}
+
+.select-item-selected {
+  color: royalblue;
 }
 
 /* Search Bar Enhancements */

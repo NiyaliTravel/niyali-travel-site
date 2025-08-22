@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
@@ -15,7 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
-  const [location, navigate] = useLocation();
+  const location = useLocation();
 
   // Fetch guest houses for dropdown
   const { data: guestHouses = [] } = useQuery<any[]>({
@@ -37,7 +37,7 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3" data-testid="logo-link">
+          <Link to="/" className="flex items-center space-x-3" data-testid="logo-link">
             <img 
               src={NiyaliLogo} 
               alt="Niyali Logo" 
@@ -54,24 +54,24 @@ export default function Navigation() {
             {navItems.map((item) => (
               <Link
                 key={item.href}
-                href={item.href}
+                to={item.href}
                 className={`text-gray-700 hover:text-niyali-navy transition-colors ${
-                  location === item.href ? 'text-niyali-navy font-medium' : ''
+                  location.pathname === item.href ? 'text-niyali-navy font-medium' : ''
                 }`}
                 data-testid={`nav-${item.label.toLowerCase().replace(' ', '-')}`}
               >
                 {item.label}
               </Link>
             ))}
-            <Link 
-              href="/agent-login"
+            <Link
+              to="/agent-login"
               className="bg-niyali-gradient text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
               data-testid="nav-agent-portal"
             >
               Agent Portal
             </Link>
-            <Link 
-              href="/traveler-portal"
+            <Link
+              to="/traveler-portal"
               className="border-2 border-niyali-navy text-niyali-navy px-4 py-2 rounded-lg hover:bg-niyali-navy hover:text-white transition-all"
               data-testid="nav-traveler-portal"
             >
@@ -109,10 +109,10 @@ export default function Navigation() {
                   {navItems.map((item) => (
                     <Link
                       key={item.href}
-                      href={item.href}
+                      to={item.href}
                       onClick={() => setIsOpen(false)}
                       className={`text-lg text-gray-700 hover:text-niyali-navy transition-colors ${
-                        location === item.href ? 'text-niyali-navy font-medium' : ''
+                        location.pathname === item.href ? 'text-niyali-navy font-medium' : ''
                       }`}
                       data-testid={`mobile-nav-${item.label.toLowerCase().replace(' ', '-')}`}
                     >
@@ -122,16 +122,16 @@ export default function Navigation() {
                 </div>
                 
                 <div className="flex flex-col space-y-3 pt-6 border-t">
-                  <Link 
-                    href="/agent-login"
+                  <Link
+                    to="/agent-login"
                     onClick={() => setIsOpen(false)}
                     className="bg-niyali-gradient text-white px-6 py-3 rounded-lg text-center hover:opacity-90 transition-opacity"
                     data-testid="mobile-nav-agent-portal"
                   >
                     Agent Portal
                   </Link>
-                  <Link 
-                    href="/traveler-portal"
+                  <Link
+                    to="/traveler-portal"
                     onClick={() => setIsOpen(false)}
                     className="border-2 border-niyali-navy text-niyali-navy px-6 py-3 rounded-lg text-center hover:bg-niyali-navy hover:text-white transition-all"
                     data-testid="mobile-nav-traveler-portal"

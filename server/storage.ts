@@ -25,8 +25,6 @@ import {
   type InsertPayment
 } from "@shared/schema";
 
-import { packages } from "@shared/schema";
-
 export interface IStorage {
   // User operations
   getUser(id: string): Promise<User | undefined>;
@@ -51,6 +49,7 @@ export interface IStorage {
   searchGuestHouses(query: string): Promise<GuestHouse[]>;
   createGuestHouse(guestHouse: InsertGuestHouse): Promise<GuestHouse>;
   updateGuestHouse(id: string, guestHouse: Partial<InsertGuestHouse>): Promise<GuestHouse | undefined>;
+  deleteGuestHouse(id: string): Promise<boolean>;
 
   // Booking operations
   getBooking(id: string): Promise<Booking | undefined>;
@@ -67,18 +66,24 @@ export interface IStorage {
   getExperiencesByCategory(category: string): Promise<Experience[]>;
   getExperience(id: string): Promise<Experience | undefined>;
   createExperience(experience: InsertExperience): Promise<Experience>;
+  updateExperience(id: string, experience: Partial<InsertExperience>): Promise<Experience | undefined>;
+  deleteExperience(id: string): Promise<boolean>;
 
   // Ferry Schedule operations
   getAllFerrySchedules(): Promise<FerrySchedule[]>;
   searchFerrySchedules(from: string, to: string, date?: string): Promise<FerrySchedule[]>;
   getFerrySchedule(id: string): Promise<FerrySchedule | undefined>;
   createFerrySchedule(schedule: InsertFerrySchedule): Promise<FerrySchedule>;
+  updateFerrySchedule(id: string, schedule: Partial<InsertFerrySchedule>): Promise<FerrySchedule | undefined>;
+  deleteFerrySchedule(id: string): Promise<boolean>;
 
   // Domestic Airlines operations
   getAllDomesticAirlines(): Promise<DomesticAirline[]>;
   searchDomesticAirlines(from: string, to: string, date?: string): Promise<DomesticAirline[]>;
   getDomesticAirline(id: string): Promise<DomesticAirline | undefined>;
   createDomesticAirline(airline: InsertDomesticAirline): Promise<DomesticAirline>;
+  updateDomesticAirline(id: string, airline: Partial<InsertDomesticAirline>): Promise<DomesticAirline | undefined>;
+  deleteDomesticAirline(id: string): Promise<boolean>;
   getDomesticAirlinesByType(aircraftType: string): Promise<DomesticAirline[]>;
 
   // Review operations
@@ -119,6 +124,7 @@ export interface IStorage {
   getPackageById(id: string): Promise<Package | null>;
   createPackage(data: InsertPackage): Promise<Package>;
   updatePackage(id: string, data: Partial<InsertPackage>): Promise<Package | null>;
+  deletePackage(id: string): Promise<boolean>;
 
   // Package availability methods
   getPackageAvailability(packageId?: string, date?: Date): Promise<PackageAvailability[]>;
@@ -246,6 +252,11 @@ export class DatabaseStorage implements IStorage {
     return guestHouse || undefined;
   }
 
+  async deleteGuestHouse(id: string): Promise<boolean> {
+    const result = await db.delete(guestHouses).where(eq(guestHouses.id, id));
+    return (result.rowCount ?? 0) > 0;
+  }
+
   // Booking operations
   async getBooking(id: string): Promise<Booking | undefined> {
     const [booking] = await db.select().from(bookings).where(eq(bookings.id, id));
@@ -329,6 +340,19 @@ export class DatabaseStorage implements IStorage {
     return experience;
   }
 
+  async updateExperience(id: string, updateExperience: Partial<InsertExperience>): Promise<Experience | undefined> {
+    const [experience] = await db.update(experiences)
+      .set({ ...updateExperience })
+      .where(eq(experiences.id, id))
+      .returning();
+    return experience || undefined;
+  }
+
+  async deleteExperience(id: string): Promise<boolean> {
+    const result = await db.delete(experiences).where(eq(experiences.id, id));
+    return (result.rowCount ?? 0) > 0;
+  }
+
   // Ferry Schedule operations
   async getAllFerrySchedules(): Promise<FerrySchedule[]> {
     return await db.select().from(ferrySchedules)
@@ -365,6 +389,19 @@ export class DatabaseStorage implements IStorage {
     return schedule;
   }
 
+  async updateFerrySchedule(id: string, updateSchedule: Partial<InsertFerrySchedule>): Promise<FerrySchedule | undefined> {
+    const [schedule] = await db.update(ferrySchedules)
+      .set({ ...updateSchedule })
+      .where(eq(ferrySchedules.id, id))
+      .returning();
+    return schedule || undefined;
+  }
+
+  async deleteFerrySchedule(id: string): Promise<boolean> {
+    const result = await db.delete(ferrySchedules).where(eq(ferrySchedules.id, id));
+    return (result.rowCount ?? 0) > 0;
+  }
+
   // Domestic Airlines operations
   async getAllDomesticAirlines(): Promise<DomesticAirline[]> {
     return await db.select().from(domesticAirlines)
@@ -399,6 +436,19 @@ export class DatabaseStorage implements IStorage {
   async createDomesticAirline(insertAirline: InsertDomesticAirline): Promise<DomesticAirline> {
     const [airline] = await db.insert(domesticAirlines).values(insertAirline).returning();
     return airline;
+  }
+
+  async updateDomesticAirline(id: string, updateAirline: Partial<InsertDomesticAirline>): Promise<DomesticAirline | undefined> {
+    const [airline] = await db.update(domesticAirlines)
+      .set({ ...updateAirline, updatedAt: new Date() })
+      .where(eq(domesticAirlines.id, id))
+      .returning();
+    return airline || undefined;
+  }
+
+  async deleteDomesticAirline(id: string): Promise<boolean> {
+    const result = await db.delete(domesticAirlines).where(eq(domesticAirlines.id, id));
+    return (result.rowCount ?? 0) > 0;
   }
 
   async getDomesticAirlinesByType(aircraftType: string): Promise<DomesticAirline[]> {
@@ -579,6 +629,11 @@ export class DatabaseStorage implements IStorage {
       .where(eq(packages.id, id))
       .returning();
     return updated || null;
+  }
+
+  async deletePackage(id: string): Promise<boolean> {
+    const result = await db.delete(packages).where(eq(packages.id, id));
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Package availability methods

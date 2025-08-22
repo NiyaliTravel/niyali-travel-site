@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -19,38 +19,21 @@ import BookingEngine from "@/pages/booking-engine";
 import IslandExplorer from "@/pages/island-explorer";
 import Islands from "@/pages/islands";
 import Packages from "@/pages/packages";
+import Booking from "@/pages/booking";
+import AdminContent from "@/pages/admin-content";
+import Admin from "@/pages/admin";
 
-function Router() {
-  return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/destinations" element={<Destinations />} />
-      <Route path="/experiences" element={<Packages />} />
-      <Route path="/guest-houses" element={<GuestHouses />} />
-      <Route path="/islands" element={<Islands />} />
-      <Route path="/packages" element={<Packages />} />
-      <Route path="/ferry-schedule" element={<FerrySchedule />} />
-      <Route path="/domestic-airlines" element={<DomesticAirlines />} />
-      <Route path="/agent-portal" element={<AgentPortal />} />
-      <Route path="/agent-login" element={<AgentLogin />} />
-      <Route path="/traveler-portal" element={<TravelerPortal />} />
-      <Route path="/admin-login" element={<AdminLogin />} />
-      <Route path="/admin" element={<AdminDashboard />} />
-      <Route path="/admin/availability" element={<AdminAvailability />} />
-      <Route path="/booking" element={<BookingEngine />} />
-      <Route path="/island-explorer" element={<IslandExplorer />} />
-      {/* Fallback to 404 */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  );
-}
+const PrivateRoute = ({ children }: { children: JSX.Element }) => {
+  const isAuthenticated = !!localStorage.getItem("admin-token");
+  return isAuthenticated ? children : <Navigate to="/admin-login" />;
+};
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
-        <BrowserRouter basename="/niyali-travel-site">
+        <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/destinations" element={<Destinations />} />
@@ -64,9 +47,11 @@ function App() {
             <Route path="/agent-login" element={<AgentLogin />} />
             <Route path="/traveler-portal" element={<TravelerPortal />} />
             <Route path="/admin-login" element={<AdminLogin />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/availability" element={<AdminAvailability />} />
-            <Route path="/booking" element={<BookingEngine />} />
+            <Route path="/admin" element={<PrivateRoute><Admin /></PrivateRoute>} />
+            <Route path="/admin/dashboard" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
+            <Route path="/admin/availability" element={<PrivateRoute><AdminAvailability /></PrivateRoute>} />
+            <Route path="/admin/content" element={<PrivateRoute><AdminContent /></PrivateRoute>} />
+            <Route path="/booking" element={<Booking />} />
             <Route path="/island-explorer" element={<IslandExplorer />} />
             {/* Fallback to 404 */}
             <Route path="*" element={<NotFound />} />

@@ -230,11 +230,9 @@ export default function Packages() {
                           Details
                         </Button>
                       </Link>
-                      <Link href={`/booking?package=${pkg.id}`}>
-                        <Button size="sm" className="niyali-gradient text-white" data-testid={`button-book-${pkg.id}`}>
-                          Book Now
-                        </Button>
-                      </Link>
+                      <Button size="sm" className="niyali-gradient text-white" data-testid={`button-book-${pkg.id}`} onClick={() => navigate(`/booking?package=${pkg.id}`)}>
+                        Book Now
+                      </Button>
                     </div>
                   </div>
                 </CardContent>

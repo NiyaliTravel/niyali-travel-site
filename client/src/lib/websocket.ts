@@ -20,7 +20,19 @@ export function useWebSocket() {
     try {
       // Determine WebSocket URL based on current location
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const wsUrl = `${protocol}//${window.location.host}/ws`;
+      let host = window.location.host;
+      
+      // Handle development vs production
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        // Development mode - use same port as current location
+        host = window.location.host;
+      } else {
+        // Production mode - assume API is on same domain
+        host = window.location.host;
+      }
+      
+      const wsUrl = `${protocol}//${host}/ws`;
+      console.log('Attempting WebSocket connection to:', wsUrl);
       
       wsRef.current = new WebSocket(wsUrl);
 
@@ -142,7 +154,17 @@ export class WebSocketService {
     return new Promise((resolve, reject) => {
       try {
         const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-        const wsUrl = `${protocol}//${window.location.host}/ws`;
+        let host = window.location.host;
+        
+        // Handle development vs production
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          host = window.location.host;
+        } else {
+          host = window.location.host;
+        }
+        
+        const wsUrl = `${protocol}//${host}/ws`;
+        console.log('WebSocket Service connecting to:', wsUrl);
         
         this.ws = new WebSocket(wsUrl);
 

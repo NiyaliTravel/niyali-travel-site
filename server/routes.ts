@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
-import { storage } from "./storage";
+import { storageWrapper as storage } from "./storageWrapper";
 import { db } from "./db";
 import { sql } from "drizzle-orm";
 import { analyzeSentiment } from "./services/openai";
@@ -17,13 +17,15 @@ import {
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import { verifyAdmin } from "./middleware";
+import { registerAdminRoutes } from "./adminRoutes";
 
 const JWT_SECRET = process.env.JWT_SECRET || "niyali-travel-secret-key";
 
 // Middleware for authentication
 const authenticateToken = async (req: any, res: any, next: any) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const token = authHeader && authHeader.split(' ');
 
   if (!token) {
     return res.status(401).json({ message: 'Access token required' });
@@ -113,7 +115,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         token 
       });
     } catch (error) {
-      res.status(400).json({ message: 'Registration failed', error: error.message });
+      res.status(400).json({ message: 'Registration failed', error: (error as Error).message });
     }
   });
 
@@ -138,7 +140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         token 
       });
     } catch (error) {
-      res.status(500).json({ message: 'Login failed', error: error.message });
+      res.status(500).json({ message: 'Login failed', error: (error as Error).message });
     }
   });
 
@@ -146,32 +148,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/islands', async (req, res) => {
     try {
       const { search, atoll, hasGuestHouses } = req.query;
-      
-      let query = sql`SELECT * FROM islands WHERE is_active = true`;
-      const conditions = [];
-      
-      if (search) {
-        conditions.push(sql`(LOWER(name) LIKE ${`%${search.toString().toLowerCase()}%`} OR LOWER(atoll) LIKE ${`%${search.toString().toLowerCase()}%`})`);
-      }
-      
-      if (atoll) {
-        conditions.push(sql`atoll = ${atoll}`);
-      }
-      
-      if (hasGuestHouses === 'true') {
-        conditions.push(sql`has_guest_houses = true`);
-      }
-      
-      if (conditions.length > 0) {
-        query = sql`SELECT * FROM islands WHERE is_active = true AND ${sql.join(conditions, sql` AND `)}`;
-      }
-      
-      query = sql`${query} ORDER BY name ASC`;
-      
-      const islands = await db.execute(query);
-      res.json(islands.rows);
+      const islands = await storage.getAllIslands({
+        search: search as string,
+        atoll: atoll as string,
+        hasGuestHouses: hasGuestHouses === 'true'
+      });
+      res.json(islands);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch islands', error: error.message });
+      res.status(500).json({ message: 'Failed to fetch islands', error: (error as Error).message });
     }
   });
 
@@ -186,9 +170,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: 'Island not found' });
       }
       
-      res.json(result.rows[0]);
+      res.json(result.rows);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch island', error: error.message });
+      res.status(500).json({ message: 'Failed to fetch island', error: (error as Error).message });
     }
   });
 
@@ -222,7 +206,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(guestHouses);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch guest houses', error: error.message });
+      res.status(500).json({ message: 'Failed to fetch guest houses', error: (error as Error).message });
     }
   });
 
@@ -234,17 +218,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json(guestHouse);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch guest house', error: error.message });
-    }
-  });
-
-  app.post('/api/guest-houses', authenticateToken, async (req, res) => {
-    try {
-      const guestHouseData = insertGuestHouseSchema.parse(req.body);
-      const guestHouse = await storage.createGuestHouse(guestHouseData);
-      res.status(201).json(guestHouse);
-    } catch (error) {
-      res.status(400).json({ message: 'Failed to create guest house', error: error.message });
+      res.status(500).json({ message: 'Failed to fetch guest house', error: (error as Error).message });
     }
   });
 
@@ -265,7 +239,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(experiences);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch experiences', error: error.message });
+      res.status(500).json({ message: 'Failed to fetch experiences', error: (error as Error).message });
     }
   });
 
@@ -288,7 +262,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(schedules);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch ferry schedules', error: error.message });
+      res.status(500).json({ message: 'Failed to fetch ferry schedules', error: (error as Error).message });
     }
   });
 
@@ -313,7 +287,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(airlines);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch domestic airlines', error: error.message });
+      res.status(500).json({ message: 'Failed to fetch domestic airlines', error: (error as Error).message });
     }
   });
 
@@ -325,17 +299,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json(airline);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch airline', error: error.message });
-    }
-  });
-
-  app.post('/api/domestic-airlines', authenticateToken, async (req, res) => {
-    try {
-      const airlineData = insertDomesticAirlineSchema.parse(req.body);
-      const airline = await storage.createDomesticAirline(airlineData);
-      res.status(201).json(airline);
-    } catch (error) {
-      res.status(400).json({ message: 'Failed to create airline', error: error.message });
+      res.status(500).json({ message: 'Failed to fetch airline', error: (error as Error).message });
     }
   });
 
@@ -362,7 +326,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(201).json(booking);
     } catch (error) {
-      res.status(400).json({ message: 'Failed to create booking', error: error.message });
+      res.status(400).json({ message: 'Failed to create booking', error: (error as Error).message });
     }
   });
 
@@ -371,7 +335,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const bookings = await storage.getBookingsByUser((req as any).user.id);
       res.json(bookings);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch bookings', error: error.message });
+      res.status(500).json({ message: 'Failed to fetch bookings', error: (error as Error).message });
     }
   });
 
@@ -412,7 +376,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(201).json({ message: 'Registration submitted for review', agent });
     } catch (error) {
-      res.status(400).json({ message: 'Failed to register agent', error: error.message });
+      res.status(400).json({ message: 'Failed to register agent', error: (error as Error).message });
     }
   });
 
@@ -444,7 +408,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ token, agent, user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName } });
     } catch (error) {
-      res.status(500).json({ message: 'Login failed', error: error.message });
+      res.status(500).json({ message: 'Login failed', error: (error as Error).message });
     }
   });
 
@@ -458,7 +422,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       res.status(201).json(agent);
     } catch (error) {
-      res.status(400).json({ message: 'Failed to create agent profile', error: error.message });
+      res.status(400).json({ message: 'Failed to create agent profile', error: (error as Error).message });
     }
   });
 
@@ -467,7 +431,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const agents = await storage.getAllAgents();
       res.json(agents);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch agents', error: error.message });
+      res.status(500).json({ message: 'Failed to fetch agents', error: (error as Error).message });
     }
   });
 
@@ -479,7 +443,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json(agent);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch agent profile', error: error.message });
+      res.status(500).json({ message: 'Failed to fetch agent profile', error: (error as Error).message });
     }
   });
 
@@ -498,7 +462,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(201).json({ ...review, sentiment });
     } catch (error) {
-      res.status(400).json({ message: 'Failed to create review', error: error.message });
+      res.status(400).json({ message: 'Failed to create review', error: (error as Error).message });
     }
   });
 
@@ -507,17 +471,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const reviews = await storage.getReviewsByGuestHouse(req.params.id);
       res.json(reviews);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch reviews', error: error.message });
-    }
-  });
-
-  // Chat routes
-  app.get('/api/chat/:sessionId', async (req, res) => {
-    try {
-      const messages = await storage.getChatMessages(req.params.sessionId);
-      res.json(messages);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch chat messages', error: error.message });
+      res.status(500).json({ message: 'Failed to fetch reviews', error: (error as Error).message });
     }
   });
 
@@ -527,7 +481,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const message = await storage.createChatMessage(messageData);
       res.status(201).json(message);
     } catch (error) {
-      res.status(400).json({ message: 'Failed to send message', error: error.message });
+      res.status(400).json({ message: 'Failed to send message', error: (error as Error).message });
     }
   });
 
@@ -542,9 +496,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         new Date(checkOut)
       );
       
+      if (!isAvailable) {
+        return res.status(400).json({ message: 'Guest house not available for selected dates' });
+      }
+      
       res.json({ available: isAvailable });
     } catch (error) {
-      res.status(500).json({ message: 'Failed to check availability', error: error.message });
+      res.status(500).json({ message: 'Failed to check availability', error: (error as Error).message });
     }
   });
 
@@ -554,7 +512,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const sections = await storage.getAllContentSections();
       res.json(sections);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch content sections', error: error.message });
+      res.status(500).json({ message: 'Failed to fetch content sections', error: (error as Error).message });
     }
   });
 
@@ -566,7 +524,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json(section);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch content section', error: error.message });
+      res.status(500).json({ message: 'Failed to fetch content section', error: (error as Error).message });
     }
   });
 
@@ -579,7 +537,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       res.status(201).json(section);
     } catch (error) {
-      res.status(400).json({ message: 'Failed to create content section', error: error.message });
+      res.status(400).json({ message: 'Failed to create content section', error: (error as Error).message });
     }
   });
 
@@ -595,40 +553,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json(section);
     } catch (error) {
-      res.status(400).json({ message: 'Failed to update content section', error: error.message });
-    }
-  });
-
-  // Navigation management routes
-  app.get('/api/navigation', async (req, res) => {
-    try {
-      const items = await storage.getAllNavigationItems();
-      res.json(items);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch navigation items', error: error.message });
-    }
-  });
-
-  app.post('/api/navigation', authenticateToken, async (req, res) => {
-    try {
-      const navData = insertNavigationItemSchema.parse(req.body);
-      const item = await storage.createNavigationItem(navData);
-      res.status(201).json(item);
-    } catch (error) {
-      res.status(400).json({ message: 'Failed to create navigation item', error: error.message });
-    }
-  });
-
-  app.put('/api/navigation/:id', authenticateToken, async (req, res) => {
-    try {
-      const navData = insertNavigationItemSchema.partial().parse(req.body);
-      const item = await storage.updateNavigationItem(req.params.id, navData);
-      if (!item) {
-        return res.status(404).json({ message: 'Navigation item not found' });
-      }
-      res.json(item);
-    } catch (error) {
-      res.status(400).json({ message: 'Failed to update navigation item', error: error.message });
+      res.status(400).json({ message: 'Failed to update content section', error: (error as Error).message });
     }
   });
 
@@ -640,7 +565,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json({ message: 'Navigation item deleted successfully' });
     } catch (error) {
-      res.status(500).json({ message: 'Failed to delete navigation item', error: error.message });
+      res.status(500).json({ message: 'Failed to delete navigation item', error: (error as Error).message });
     }
   });
 
@@ -673,26 +598,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: 'Login failed', error: (error as Error).message });
     }
   });
-
-  // Middleware to verify admin token
-  const verifyAdmin = (req: any, res: any, next: any) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    
-    if (!token) {
-      return res.status(401).json({ message: 'No token provided' });
-    }
-    
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
-      if (!decoded.isAdmin) {
-        return res.status(403).json({ message: 'Admin access required' });
-      }
-      req.user = decoded;
-      next();
-    } catch (error) {
-      return res.status(401).json({ message: 'Invalid token' });
-    }
-  };
 
   // Room availability routes
   app.get('/api/room-availability', async (req, res) => {
@@ -892,6 +797,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Internal server error" });
     }
   });
+
+  registerAdminRoutes(app);
 
   return httpServer;
 }
