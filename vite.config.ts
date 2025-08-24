@@ -7,7 +7,8 @@ import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  base: "/niyali-travel-site/", // Set base path for deployment
+  root: path.resolve(__dirname, "client"), // Set the root to the client directory
+  base: "/", // Set base path for deployment
   plugins: [
     react(),
     runtimeErrorOverlay(), // Optional: shows runtime errors in-browser
