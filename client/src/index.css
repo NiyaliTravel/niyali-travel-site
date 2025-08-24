@@ -137,6 +137,7 @@
 }
 
 .glass-morphism {
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
   backdrop-filter: blur(16px) saturate(180%);
   background-color: rgba(255, 255, 255, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.125);
@@ -421,4 +422,9 @@
   .parallax-bg {
     background-attachment: scroll;
   }
+}
+
+/* Fix for white text on white background in Select component */
+[data-radix-popper-content-wrapper] {
+  color: var(--foreground);
 }

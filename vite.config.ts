@@ -7,9 +7,10 @@ import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  base: '/',
+  base: "/niyali-travel-site/", // Set base path for deployment
   plugins: [
     react(),
+    runtimeErrorOverlay(), // Optional: shows runtime errors in-browser
   ],
   resolve: {
     alias: {
@@ -18,20 +19,21 @@ export default defineConfig({
       "@assets": path.resolve(__dirname, "attached_assets"),
     },
   },
-  root: path.resolve(__dirname, "client"),
   build: {
     outDir: path.resolve(__dirname, "dist"),
     emptyOutDir: true,
   },
   server: {
+    port: 5181, // ✅ Frontend dev server
     fs: {
       strict: true,
-      deny: ["**/.*"],
+      deny: ["**/.*"], // Prevent access to hidden files
     },
     proxy: {
-      '/api': {
-        target: 'http://localhost:5000',
+      "/api": {
+        target: "http://localhost:5008", // Backend server
         changeOrigin: true,
+        secure: false,
       },
     },
   },

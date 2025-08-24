@@ -30,6 +30,12 @@ export default function HeroSearch() {
   const [guestsOpen, setGuestsOpen] = useState(false);
   const [atollIslands, setAtollIslands] = useState<Record<string, string[]>>({});
 
+  // Fetch atolls from API
+  const { data: atollsData = [] } = useQuery<string[]>({
+    queryKey: ['atolls'],
+    queryFn: () => fetch('/api/atolls').then(res => res.json()),
+  });
+
   // Fetch islands from API
   const { data: islandsData = [] } = useQuery<any[]>({
     queryKey: ['islands'],
@@ -50,8 +56,6 @@ export default function HeroSearch() {
     }
   }, [islandsData]);
 
-  // Get unique atolls from the islands data
-  const atolls = Object.keys(atollIslands).sort();
 
   const getTotalGuests = () => {
     const total = adults + children + infants;
@@ -131,7 +135,7 @@ export default function HeroSearch() {
               <SelectValue placeholder="Choose Atoll" />
             </SelectTrigger>
             <SelectContent>
-              {atolls.map((atoll) => (
+              {atollsData.map((atoll) => (
                 <SelectItem key={atoll} value={atoll}>
                   {atoll}
                 </SelectItem>

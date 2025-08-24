@@ -175,6 +175,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: 'Failed to fetch island', error: (error as Error).message });
     }
   });
+ 
+  // Atolls route
+  app.get('/api/atolls', async (req, res) => {
+    try {
+      const result = await db.execute(sql`
+        SELECT DISTINCT atoll FROM islands
+        WHERE atoll IS NOT NULL AND atoll != ''
+        ORDER BY atoll ASC
+      `);
+      const atolls = result.rows.map((row: any) => row.atoll);
+      res.json(atolls);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch atolls', error: (error as Error).message });
+    }
+  });
 
   // Packages routes
   app.get('/api/packages', async (req, res) => {
